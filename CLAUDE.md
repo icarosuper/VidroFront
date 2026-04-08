@@ -84,6 +84,37 @@ Query key convention: `['resource-type', id]` e.g. `['videos', videoId]`, `['cha
 - Authenticated routes use `beforeLoad` to redirect to `/` with login modal if no session
 - SSR routes call a server function to obtain `accessToken` before render (no client waterfall)
 
+#### Sign out — limpar estado local antes da requisição ao servidor
+
+Em `useSignOut`, o `tokenStore.clear()`, `apiClient.setRenewTokenCallback(null)` e `queryClient.clear()` devem ser chamados **antes** de `await serverSignOut(...)`. Isso garante que o `useSyncExternalStore` notifique imediatamente e a UI atualize sem precisar aguardar a resposta do servidor (ou recarregar a página).
+
+```ts
+// ✅
+tokenStore.clear()
+apiClient.setRenewTokenCallback(null)
+queryClient.clear()
+if (accessToken) await serverSignOut({ data: { accessToken } })
+
+// ❌ — UI só atualiza depois que o servidor responder
+if (accessToken) await serverSignOut({ data: { accessToken } })
+tokenStore.clear()
+```
+
+#### SSR auth hydration — sem flash
+
+O root route (`__root.tsx`) tem um `loader` que chama `getInitialToken()` **apenas no servidor**. O token retornado é serializado no estado dehydratado do TanStack Router e chega ao cliente sem waterfall.
+
+`useIsAuthenticated` usa `useSyncExternalStore` com três argumentos:
+- `subscribe` — reatividade para sign in/sign out pós-mount
+- client snapshot — `() => tokenStore.get() !== null`
+- server snapshot — `() => initialIsAuthenticated` (vem do `AuthProvider` via context)
+
+Durante a hidratação, o React usa o **server snapshot**. Se o server snapshot fosse `() => false` (hardcoded), o HTML do servidor renderizaria "não autenticado" e o cliente mostraria um flash ao corrigir. A solução é o `AuthProvider` injetar `initialIsAuthenticated` via context — o servidor renderiza com o valor correto, o cliente hidrata com o mesmo valor, e não há discrepância.
+
+**`tokenStore` não é setado no servidor** (estado global mutável causaria vazamento entre requests concorrentes). O `tokenStore.set` ocorre apenas no cliente (`typeof window !== 'undefined'`), dentro do `RootApp`.
+
+Arquivos relevantes: `src/routes/__root.tsx` (loader + RootApp), `src/features/auth/hooks.tsx` (AuthProvider + useIsAuthenticated).
+
 ### Rendering strategy
 
 | Route | Strategy |

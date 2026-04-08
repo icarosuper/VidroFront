@@ -1,15 +1,20 @@
 import {
   HeadContent,
+  Outlet,
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import { Outlet } from '@tanstack/react-router'
+import type { QueryClient } from '@tanstack/react-query'
 import { Header } from '../components/Header'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
+import { AuthModal } from '../features/auth/components/AuthModal'
+import { AuthModalProvider, AuthProvider } from '../features/auth/hooks'
+import { getInitialToken, renewToken } from '../features/auth/server'
+import { apiClient } from '../shared/lib/api-client'
+import { tokenStore } from '../shared/lib/token-store'
 import appCss from '../styles.css?url'
-import type { QueryClient } from '@tanstack/react-query'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -24,8 +29,41 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
     links: [{ rel: 'stylesheet', href: appCss }],
   }),
+  loader: async () => {
+    const isServer = typeof window === 'undefined'
+    if (!isServer) return { initialToken: null }
+
+    try {
+      const initialToken = await getInitialToken()
+      return { initialToken }
+    } catch {
+      return { initialToken: null }
+    }
+  },
   shellComponent: RootDocument,
+  component: RootApp,
 })
+
+function RootApp() {
+  const { initialToken } = Route.useLoaderData()
+
+  const isClient = typeof window !== 'undefined'
+  const tokenAlreadySet = tokenStore.get() !== null
+  if (isClient && !tokenAlreadySet && initialToken !== null) {
+    tokenStore.set(initialToken)
+    apiClient.setRenewTokenCallback(() => renewToken())
+  }
+
+  return (
+    <AuthProvider initialIsAuthenticated={initialToken !== null}>
+      <AuthModalProvider>
+        <Header />
+        <Outlet />
+        <AuthModal />
+      </AuthModalProvider>
+    </AuthProvider>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
@@ -34,8 +72,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Header />
-        <Outlet />
+        {children}
         <TanStackDevtools
           config={{ position: 'bottom-right' }}
           plugins={[
