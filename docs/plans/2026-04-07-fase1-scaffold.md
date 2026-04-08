@@ -12,7 +12,7 @@
 
 ---
 
-## Task 1: Scaffold do projeto
+## ✅ Task 1: Scaffold do projeto
 
 **Files:**
 - Create: `FrontNovo/` (projeto completo)
@@ -50,7 +50,7 @@ git commit -m "chore: scaffold TanStack Start com shadcn e TanStack Query"
 
 ---
 
-## Task 2: Limpar boilerplate
+## ✅ Task 2: Limpar boilerplate
 
 O CLI gera páginas de exemplo, componentes de demo e estilos temáticos (cores `--sea-ink`, `--lagoon`, etc.) que não queremos. Substituímos por uma base neutra.
 
@@ -284,7 +284,7 @@ git commit -m "chore: limpar boilerplate do scaffold"
 
 ---
 
-## Task 3: Criar estrutura de pastas das features
+## ✅ Task 3: Criar estrutura de pastas das features
 
 **Files:**
 - Create: `src/features/auth/components/.gitkeep`
@@ -344,7 +344,7 @@ git commit -m "chore: criar estrutura de pastas das features"
 
 ---
 
-## Task 4: Definir tipos base compartilhados
+## ✅ Task 4: Definir tipos base compartilhados
 
 **Files:**
 - Create: `src/shared/types.ts`
@@ -432,7 +432,7 @@ git commit -m "feat: definir tipos base compartilhados (ApiSuccess, ApiError, En
 
 ---
 
-## Task 5: Implementar o API client
+## ✅ Task 5: Implementar o API client
 
 O client central faz `fetch` para a API, injeta o access token, intercepta 401 para renovar o token automaticamente e mapeia erros para tipos TypeScript.
 
@@ -719,7 +719,7 @@ git commit -m "feat: implementar API client com injeção de token e retry em 40
 
 ---
 
-## Task 6: Criar rotas placeholder
+## ✅ Task 6: Criar rotas placeholder
 
 Criar todas as rotas definidas no design para que o router as reconheça. Cada rota tem um componente mínimo com o nome da página.
 
@@ -855,11 +855,11 @@ git commit -m "feat: criar rotas placeholder para todas as páginas do design"
 
 ## Checklist de conclusão da Fase 1
 
-- [ ] `bun run dev` sobe sem erros
-- [ ] `bun run test` passa (7 testes do api-client)
-- [ ] Todas as 8 rotas navegáveis no browser
-- [ ] Estrutura de pastas `src/features/` e `src/shared/` criada
-- [ ] `src/shared/types.ts` com todos os tipos base
-- [ ] `src/shared/lib/api-client.ts` com token injection e retry 401
-- [ ] `.env.example` commitado, `.env` no `.gitignore`
-- [ ] 5 commits limpos no histórico do git
+- [x] `bun run dev` sobe sem erros
+- [x] `bun run test` passa (7 testes do api-client)
+- [x] Todas as 8 rotas navegáveis no browser
+- [x] Estrutura de pastas `src/features/` e `src/shared/` criada
+- [x] `src/shared/types.ts` com todos os tipos base
+- [x] `src/shared/lib/api-client.ts` com token injection e retry 401
+- [x] `.env.example` commitado, `.env` no `.gitignore`
+- [x] 5 commits limpos no histórico do git

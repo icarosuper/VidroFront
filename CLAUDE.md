@@ -123,3 +123,57 @@ The project is built phase by phase. Detailed plans are in `docs/plans/`:
 9. Playlists
 
 Each phase must ship working — nothing half-done.
+
+## Language
+
+All code must be in English: variable names, function names, types, comments, and test names. The only exception is commit messages, which are written in Portuguese.
+
+## Git commits
+
+**NEVER commit code without explicit user request.** Always:
+1. Implement the changes
+2. Run tests to verify they pass
+3. Show the user the changes and suggest a commit message
+4. Wait for the user to approve or request the commit
+
+The user will decide when and how to commit.
+
+## Working style
+
+After each implementation step:
+1. **Run relevant tests** — `bun run test` after finishing a feature. Fix any failures before proceeding.
+2. **Update relevant docs** — reflect any route, API, or design changes in `docs/plans/`. Mark completed tasks as ✅ in the implementation plan.
+3. **Suggest a commit message in Portuguese** — the user reviews and commits manually. Never commit without being asked.
+4. **Show the next possible steps** — brief list so the user can choose what to implement next.
+
+## Branching strategy
+
+- **Feature branches** — one branch per phase or feature group (e.g. `feature/auth`, `feature/channels`), branching off `master` and merged back via PR.
+- **`master`** — always deployable.
+
+## Code readability
+
+- **Named variables over inline expressions** — always assign the result of a check or expression to a descriptively named variable before using it in a condition. Never inline results directly into `if` statements.
+  ```ts
+  // ✅
+  const emailAlreadyTaken = users.some(u => u.email === email)
+  if (emailAlreadyTaken) return { error: 'Email already in use' }
+
+  // ❌
+  if (users.some(u => u.email === email)) return { error: 'Email already in use' }
+  ```
+
+- **Extract complex logic into functions** — if a block needs a comment to explain what it does, it should be a function with a name that explains it instead.
+
+- **Names express intent** — the name should answer "what", not "how". Avoid abbreviations, single-letter names (outside loops), and generic names like `result`, `data`, `temp`.
+
+- **Ternaries always span three lines** — condition on the first line, `?` branch on the second, `:` branch on the third. Never write a ternary on a single line.
+  ```ts
+  // ✅
+  const label = isAuthenticated
+    ? 'Sign out'
+    : 'Sign in'
+
+  // ❌
+  const label = isAuthenticated ? 'Sign out' : 'Sign in'
+  ```
