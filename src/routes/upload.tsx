@@ -3,6 +3,9 @@ import { tokenStore } from '#/shared/lib/token-store'
 
 export const Route = createFileRoute('/upload')({
   beforeLoad: () => {
+    const isServer = typeof window === 'undefined'
+    if (isServer) return
+
     const isAuthenticated = tokenStore.get() !== null
     if (!isAuthenticated) {
       throw redirect({ to: '/' })

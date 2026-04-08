@@ -70,6 +70,41 @@ async function request<T>(
   return (data as { data: T }).data
 }
 
+async function uploadRequest<T>(
+  method: string,
+  path: string,
+  formData: FormData,
+  signal?: AbortSignal,
+): Promise<T> {
+  const token = tokenStore.get()
+
+  const headers: Record<string, string> = {}
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+  // Do NOT set Content-Type — browser sets it with the multipart boundary
+
+  const response = await fetch(`${BASE_URL}${path}`, {
+    method,
+    headers,
+    body: formData,
+    signal,
+  })
+
+  if (response.status === 204) {
+    return undefined as T
+  }
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    const error = data as ApiError
+    throw new ApiClientError(error.code, error.message, response.status)
+  }
+
+  return (data as { data: T }).data
+}
+
 export const apiClient = {
   get: <T>(path: string, signal?: AbortSignal) =>
     request<T>('GET', path, undefined, signal),
@@ -82,6 +117,9 @@ export const apiClient = {
 
   delete: <T>(path: string, signal?: AbortSignal) =>
     request<T>('DELETE', path, undefined, signal),
+
+  upload: <T>(path: string, formData: FormData, signal?: AbortSignal) =>
+    uploadRequest<T>('POST', path, formData, signal),
 
   setRenewTokenCallback: (cb: RenewTokenCallback | null) => {
     renewTokenCallback = cb
