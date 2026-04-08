@@ -133,7 +133,7 @@ Cada `features/*/api.ts` importa o client e exporta funções tipadas. Nenhuma f
 | 2 | Auth (signIn, signUp, signOut, renovação, proteção de rotas) | Login/logout funcionando |
 | 3 | Settings (perfil do usuário, avatar) | ✅ Usuário editável para testes |
 | 4 | Canal (criar, editar, deletar, avatar, dashboard básico) | Canal editável para testes |
-| 5 | Home + Watch (trending, feed, player HLS, registro de view, reações) | Núcleo do produto |
+| 5 | Home + Watch (trending, feed, player HLS, registro de view, reações) | ✅ Núcleo do produto funcionando |
 | 6 | Canal + Usuário públicos (`/:username`, `/:username/:handle`) | SSR + SEO completo |
 | 7 | Upload (presigned URL, progress, polling de status) | Criação de conteúdo |
 | 8 | Comentários (listagem, add, reply, edit, delete, reações) | Engajamento |

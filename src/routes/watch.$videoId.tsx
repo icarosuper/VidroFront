@@ -1,10 +1,197 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { ThumbsDown, ThumbsUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
+import { Badge } from '#/components/ui/badge'
+import { Button } from '#/components/ui/button'
+import { Separator } from '#/components/ui/separator'
+import { useIsAuthenticated } from '#/features/auth/hooks'
+import { getVideo } from '#/features/videos/api'
+import { VideoPlayer } from '#/features/videos/components/VideoPlayer'
+import { useReactToVideo, useRegisterView, useRemoveReaction, useVideo, videoKeys } from '#/features/videos/hooks'
+import { ReactionType } from '#/shared/types'
 
 export const Route = createFileRoute('/watch/$videoId')({
+  loader: async ({ params, context: { queryClient } }) => {
+    await queryClient.prefetchQuery({
+      queryKey: videoKeys.detail(params.videoId),
+      queryFn: () => getVideo(params.videoId),
+    })
+  },
   component: WatchPage,
 })
 
+type UserReaction = 'like' | 'dislike' | null
+
+function formatCount(count: number): string {
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`
+  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`
+  return String(count)
+}
+
+function formatDate(isoDate: string): string {
+  return new Date(isoDate).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+
 function WatchPage() {
   const { videoId } = Route.useParams()
-  return <main className="page-container py-8"><p>Watch: {videoId}</p></main>
+  const { data: video, isPending, isError, error } = useVideo(videoId)
+  const isAuthenticated = useIsAuthenticated()
+  const registerView = useRegisterView(videoId)
+  const reactToVideo = useReactToVideo(videoId)
+  const removeReaction = useRemoveReaction(videoId)
+
+  const [userReaction, setUserReaction] = useState<UserReaction>(null)
+
+  useEffect(() => {
+    const videoIsReady = video !== undefined
+    if (videoIsReady) {
+      registerView.mutate()
+    }
+  // Only fire once when video loads — intentionally omitting registerView from deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [video?.videoId])
+
+  if (isPending) {
+    return (
+      <main className="page-container py-8">
+        <p className="text-muted-foreground">Loading…</p>
+      </main>
+    )
+  }
+
+  if (isError) {
+    return (
+      <main className="page-container py-8">
+        <p className="text-destructive">{error.message}</p>
+      </main>
+    )
+  }
+
+  const thumbnailUrl = video.thumbnailUrls[0] ?? undefined
+  const channelInitial = video.channelName.charAt(0).toUpperCase()
+  const isMutating = reactToVideo.isPending || removeReaction.isPending
+
+  function handleLike() {
+    if (!isAuthenticated) return
+
+    const isAlreadyLiked = userReaction === 'like'
+
+    if (isAlreadyLiked) {
+      removeReaction.mutate()
+      setUserReaction(null)
+    } else {
+      reactToVideo.mutate(ReactionType.Like)
+      setUserReaction('like')
+    }
+  }
+
+  function handleDislike() {
+    if (!isAuthenticated) return
+
+    const isAlreadyDisliked = userReaction === 'dislike'
+
+    if (isAlreadyDisliked) {
+      removeReaction.mutate()
+      setUserReaction(null)
+    } else {
+      reactToVideo.mutate(ReactionType.Dislike)
+      setUserReaction('dislike')
+    }
+  }
+
+  return (
+    <main className="page-container py-8">
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <div className="flex-1 min-w-0">
+          {/* Player */}
+          <div className="aspect-video w-full">
+            {video.videoUrl
+              ? <VideoPlayer src={video.videoUrl} poster={thumbnailUrl} />
+              : (
+                <div className="flex h-full w-full items-center justify-center rounded-lg bg-muted">
+                  <p className="text-muted-foreground">
+                    {video.status.value === 'Processing'
+                      ? 'Video is being processed…'
+                      : 'Video unavailable'}
+                  </p>
+                </div>
+              )}
+          </div>
+
+          {/* Title & metadata */}
+          <div className="mt-4">
+            <h1 className="text-xl font-bold leading-tight">{video.title}</h1>
+
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
+              {/* Channel info */}
+              <div className="flex items-center gap-3">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage
+                    src={video.channelAvatarUrl ?? undefined}
+                    alt={video.channelName}
+                  />
+                  <AvatarFallback>{channelInitial}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">{video.channelName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatCount(video.viewCount)} views · {formatDate(video.createdAt)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Reaction buttons */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={userReaction === 'like' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={handleLike}
+                  disabled={isMutating || !isAuthenticated}
+                  title={isAuthenticated ? undefined : 'Sign in to react'}
+                >
+                  <ThumbsUp className="mr-1.5 h-4 w-4" />
+                  {formatCount(video.likeCount)}
+                </Button>
+                <Button
+                  variant={userReaction === 'dislike' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={handleDislike}
+                  disabled={isMutating || !isAuthenticated}
+                  title={isAuthenticated ? undefined : 'Sign in to react'}
+                >
+                  <ThumbsDown className="mr-1.5 h-4 w-4" />
+                  {formatCount(video.dislikeCount)}
+                </Button>
+              </div>
+            </div>
+
+            <Separator className="my-4" />
+
+            {/* Description */}
+            {video.description && (
+              <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                {video.description}
+              </p>
+            )}
+
+            {/* Tags */}
+            {video.tags.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {video.tags.map((tag) => (
+                  <Badge key={tag} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </main>
+  )
 }
