@@ -565,7 +565,7 @@ describe('apiClient', () => {
     const { apiClient } = await import('#/shared/lib/api-client')
     mockFetch.mockResolvedValueOnce(mockResponse({ data: { videoId: 'abc' } }, 201))
 
-    const result = await apiClient.post('/v1/channels/1/videos', {
+    const result = await apiClient.post('/v1/users/joao/channels/meu-canal/videos', {
       title: 'Meu Vídeo',
       tags: [],
       visibility: 0,
@@ -581,7 +581,7 @@ describe('apiClient', () => {
     const { apiClient } = await import('#/shared/lib/api-client')
     mockFetch.mockResolvedValueOnce(new Response(null, { status: 204 }))
 
-    const result = await apiClient.delete('/v1/channels/1/follow')
+    const result = await apiClient.delete('/v1/users/joao/channels/meu-canal/follow')
 
     expect(result).toBeUndefined()
   })

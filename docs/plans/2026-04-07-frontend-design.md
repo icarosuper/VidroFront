@@ -145,7 +145,7 @@ Cada fase termina com o produto funcionando — nada pela metade.
 
 ## Notas de Implementação
 
-- **URLs amigáveis:** API será atualizada para suportar lookup por `username` e `channelHandle` (unicidade: `userId + channelHandle`)
+- **URLs amigáveis:** canais são identificados por `username + channelHandle`. Endpoints públicos usam `/users/{username}/channels/{handle}`, endpoints autenticados usam `/channels/{handle}`
 - **Upload:** flow de 2 etapas via presigned PUT — arquivo vai direto ao MinIO, nunca passa pela API
 - **EnumValue:** toda enum na resposta vem como `{ id: number; value: string }`. No request, enviar o inteiro
 - **Paginação:** cursor é `DateTimeOffset` ISO 8601. Playlists usam estilo ligeiramente diferente (`PagedResult<T>` com `items` + `nextCursor`)
