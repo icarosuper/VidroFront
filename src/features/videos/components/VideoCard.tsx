@@ -54,16 +54,32 @@ export function VideoCard({ video }: VideoCardProps) {
 
         <CardContent className="p-3">
           <div className="flex gap-3">
-            <Avatar className="mt-0.5 h-8 w-8 shrink-0">
-              <AvatarImage src={video.channelAvatarUrl ?? undefined} alt={video.channelName} />
-              <AvatarFallback className="text-xs">{channelInitial}</AvatarFallback>
-            </Avatar>
+            <Link
+              to="/$username/$channel"
+              params={{ username: video.ownerUsername, channel: video.channelHandle }}
+              onClick={(e) => e.stopPropagation()}
+              className="no-underline shrink-0"
+            >
+              <Avatar className="mt-0.5 h-8 w-8">
+                <AvatarImage src={video.channelAvatarUrl ?? undefined} alt={video.channelName} />
+                <AvatarFallback className="text-xs">{channelInitial}</AvatarFallback>
+              </Avatar>
+            </Link>
 
             <div className="min-w-0 flex-1">
               <h3 className="line-clamp-2 text-sm font-medium leading-tight text-foreground">
                 {video.title}
               </h3>
-              <p className="mt-1 text-xs text-muted-foreground">{video.channelName}</p>
+              <Link
+                to="/$username/$channel"
+                params={{ username: video.ownerUsername, channel: video.channelHandle }}
+                onClick={(e) => e.stopPropagation()}
+                className="no-underline"
+              >
+                <p className="mt-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  {video.channelName}
+                </p>
+              </Link>
               <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Eye className="h-3 w-3" />

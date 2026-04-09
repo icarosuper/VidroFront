@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, Upload, User } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { useAuthModal, useIsAuthenticated, useSignOut } from '#/features/auth/hooks'
@@ -26,6 +26,12 @@ export function Header() {
           {isAuthenticated
             ? (
               <>
+                <Link to="/upload">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <Upload className="h-4 w-4" />
+                    <span>Upload</span>
+                  </Button>
+                </Link>
                 <Link to="/dashboard">
                   <Button variant="ghost" size="sm">
                     <span>Dashboard</span>

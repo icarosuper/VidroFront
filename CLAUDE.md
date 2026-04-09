@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Reescrita do frontend do Vidro (plataforma de vídeo). O backend .NET já está completo. Este frontend é construído incrementalmente, fase por fase (ver `docs/plans/`).
 
+## Escopo de edição
+
+Você pode **ler** outros projetos no repositório (ex: `../Api/`) para entender contratos de API, tipos e endpoints. Mas **nunca edite** arquivos fora deste diretório (`/home/icaro/Projetos/Vidro/FrontNovo/`). Se um endpoint da API estiver faltando dados necessários para o frontend, informe o usuário em vez de alterar o backend.
+
 ## Stack
 
 - **Framework:** TanStack Start (SSR seletivo, file-based routing via `src/routes/`)

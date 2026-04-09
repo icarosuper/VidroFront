@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { ThumbsDown, ThumbsUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
@@ -129,7 +129,11 @@ function WatchPage() {
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
               {/* Channel info */}
-              <div className="flex items-center gap-3">
+              <Link
+                to="/$username/$channel"
+                params={{ username: video.ownerUsername, channel: video.channelHandle }}
+                className="no-underline flex items-center gap-3 group"
+              >
                 <Avatar className="h-9 w-9">
                   <AvatarImage
                     src={video.channelAvatarUrl ?? undefined}
@@ -138,12 +142,12 @@ function WatchPage() {
                   <AvatarFallback>{channelInitial}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm font-medium">{video.channelName}</p>
+                  <p className="text-sm font-medium group-hover:underline">{video.channelName}</p>
                   <p className="text-xs text-muted-foreground">
                     {formatCount(video.viewCount)} views · {formatDate(video.createdAt)}
                   </p>
                 </div>
-              </div>
+              </Link>
 
               {/* Reaction buttons */}
               <div className="flex items-center gap-2">
