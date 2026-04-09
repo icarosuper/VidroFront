@@ -144,13 +144,16 @@ function WatchPage() {
                 <div>
                   <p className="text-sm font-medium group-hover:underline">{video.channelName}</p>
                   <p className="text-xs text-muted-foreground">
-                    {formatCount(video.viewCount)} views · {formatDate(video.createdAt)}
+                    {video.ownerUsername}/{video.channelHandle}
                   </p>
                 </div>
               </Link>
 
-              {/* Reaction buttons */}
-              <div className="flex items-center gap-2">
+              {/* Views + Reaction buttons */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">
+                  {formatCount(video.viewCount)} views
+                </span>
                 <Button
                   variant={userReaction === 'like' ? 'default' : 'outline'}
                   size="sm"
@@ -176,7 +179,8 @@ function WatchPage() {
 
             <Separator className="my-4" />
 
-            {/* Description */}
+            {/* Date + Description */}
+            <p className="text-xs text-muted-foreground mb-2">{formatDate(video.createdAt)}</p>
             {video.description && (
               <p className="whitespace-pre-wrap text-sm text-muted-foreground">
                 {video.description}

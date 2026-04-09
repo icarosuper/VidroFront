@@ -15,6 +15,7 @@ import {
 import { Textarea } from '#/components/ui/textarea'
 import { CreateChannelForm } from '#/features/channels/components/CreateChannelForm'
 import { useUserChannels } from '#/features/channels/hooks'
+import { getApiErrorMessage } from '#/shared/lib/error-messages'
 import { VideoStatus } from '#/shared/types'
 import { useCreateVideo, useUpdateVideo, useUploadThumbnail, useVideoStatus } from '../hooks'
 import { uploadVideoFile } from '../api'
@@ -146,7 +147,7 @@ function DoneState({ videoId }: { videoId: string }) {
             <p className="text-sm text-green-600">Thumbnail uploaded!</p>
           )}
           {uploadThumbnail.error && (
-            <p className="text-sm text-destructive">{uploadThumbnail.error.message}</p>
+            <p className="text-sm text-destructive">{getApiErrorMessage(uploadThumbnail.error)}</p>
           )}
         </div>
       </div>
@@ -215,10 +216,7 @@ export function UploadVideoForm({ username }: Props) {
         visibility: Number(values.visibility),
       })
     } catch (err) {
-      const message = err instanceof Error
-        ? err.message
-        : 'Failed to create video'
-      setStage({ kind: 'failed', error: message })
+      setStage({ kind: 'failed', error: getApiErrorMessage(err) })
       return
     }
 
@@ -415,7 +413,7 @@ export function UploadVideoForm({ username }: Props) {
       </div>
 
       {createVideo.error && (
-        <p className="text-sm text-destructive">{createVideo.error.message}</p>
+        <p className="text-sm text-destructive">{getApiErrorMessage(createVideo.error)}</p>
       )}
 
       <Button

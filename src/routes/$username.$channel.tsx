@@ -102,6 +102,7 @@ function ChannelPage() {
                       </Button>
                     )}
                   </div>
+                  <p className="text-sm text-muted-foreground">{channel.ownerUsername}/{channel.handle}</p>
 
                   {/* Description */}
                   {channel.description && (

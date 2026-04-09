@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Button } from '#/components/ui/button'
+import { getApiErrorMessage } from '#/shared/lib/error-messages'
 import { useUploadAvatar } from '../hooks'
 import type { UserProfile } from '../types'
 
@@ -64,7 +65,7 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
         </Button>
 
         {uploadAvatar.error && (
-          <p className="text-sm text-destructive">{uploadAvatar.error.message}</p>
+          <p className="text-sm text-destructive">{getApiErrorMessage(uploadAvatar.error)}</p>
         )}
       </div>
     </div>

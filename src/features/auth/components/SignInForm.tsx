@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from '#/components/ui/form'
 import { Input } from '#/components/ui/input'
+import { getApiErrorMessage } from '#/shared/lib/error-messages'
 import { useSignIn } from '../hooks'
 
 const signInSchema = z.object({
@@ -70,7 +71,7 @@ export function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
         />
 
         {signIn.error && (
-          <p className="text-sm text-destructive">{signIn.error.message}</p>
+          <p className="text-sm text-destructive">{getApiErrorMessage(signIn.error)}</p>
         )}
 
         <Button type="submit" className="w-full" disabled={signIn.isPending}>

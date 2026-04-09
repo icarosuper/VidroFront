@@ -9,6 +9,7 @@ import {
 import type { ReactNode } from 'react'
 import { apiClient } from '#/shared/lib/api-client'
 import { tokenStore } from '#/shared/lib/token-store'
+import { toastApiError } from '#/shared/lib/toast-error'
 import { renewToken, serverSignIn, serverSignOut, serverSignUp } from './server'
 import type { SignInRequest, SignUpRequest } from './types'
 
@@ -70,6 +71,7 @@ export function useSignOut() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    onError: toastApiError,
     mutationFn: async () => {
       const accessToken = tokenStore.get()
       tokenStore.clear()

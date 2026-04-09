@@ -7,6 +7,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import type { QueryClient } from '@tanstack/react-query'
+import { Toaster } from 'sonner'
 import { Header } from '../components/Header'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import { AuthModal } from '../features/auth/components/AuthModal'
@@ -60,6 +61,7 @@ function RootApp() {
         <Header />
         <Outlet />
         <AuthModal />
+        <Toaster richColors />
       </AuthModalProvider>
     </AuthProvider>
   )
