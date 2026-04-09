@@ -13,18 +13,26 @@ export function VideoPlayer({ src, poster }: VideoPlayerProps) {
     const video = videoRef.current
     if (!video || !src) return
 
-    const browserSupportsHlsNatively = video.canPlayType('application/vnd.apple.mpegurl') !== ''
+    const isHlsManifest = src.includes('.m3u8')
 
-    if (Hls.isSupported()) {
-      const hls = new Hls()
-      hls.loadSource(src)
-      hls.attachMedia(video)
-      return () => hls.destroy()
+    if (isHlsManifest) {
+      const browserSupportsHlsNatively = video.canPlayType('application/vnd.apple.mpegurl') !== ''
+
+      if (Hls.isSupported()) {
+        const hls = new Hls()
+        hls.loadSource(src)
+        hls.attachMedia(video)
+        return () => hls.destroy()
+      }
+
+      if (browserSupportsHlsNatively) {
+        video.src = src
+      }
+
+      return
     }
 
-    if (browserSupportsHlsNatively) {
-      video.src = src
-    }
+    video.src = src
   }, [src])
 
   return (
