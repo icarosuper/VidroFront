@@ -75,8 +75,7 @@ Trending, feed, detalhe, reações, upload (create + presigned + polling de stat
 | `hooks.ts` | `useTrending`, `useFeed`, `useVideo`, `useRegisterView`, `useReactToVideo`, `useRemoveReaction`, `useVideoStatus`, `useCreateVideo`, `useUpdateVideo`, `useChannelVideos`, `useUploadThumbnail` |
 | `server.ts` | `fetchVideoSsr` — usado pelo loader de `/watch/$videoId` |
 | `types.ts` | `Video`, `VideoSummary`, `ChannelVideoSummary`, `TrendingResponse`, `FeedPage`, `ChannelVideosPage`, `CreateVideoRequest/Response`, `UpdateVideoRequest/Response`, `ThumbnailUploadResponse` |
-| `components/VideoCard.tsx` | Card de listagem home/feed |
-| `components/ChannelVideoCard.tsx` | Card para dashboard/canal |
+| `components/VideoCard.tsx` | Card reutilizável (home/feed e canal). Props: `hideChannelInfo` oculta avatar/nome do canal; `isOwner` exibe botão de editar, overlay de status e badge de visibilidade |
 | `components/VideoGrid.tsx` | |
 | `components/VideoPlayer.tsx` | Player HLS |
 | `components/UploadVideoForm.tsx` | Cria vídeo + faz upload + polling |

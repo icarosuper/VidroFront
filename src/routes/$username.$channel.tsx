@@ -16,7 +16,7 @@ import { useIsAuthenticated } from '#/features/auth/hooks'
 import { EditChannelForm } from '#/features/channels/components/EditChannelForm'
 import { SubscribeButton } from '#/features/channels/components/SubscribeButton'
 import { useChannel, useUploadChannelAvatar } from '#/features/channels/hooks'
-import { ChannelVideoCard } from '#/features/videos/components/ChannelVideoCard'
+import { VideoCard } from '#/features/videos/components/VideoCard'
 import { useChannelVideos } from '#/features/videos/hooks'
 import { useCurrentUser } from '#/features/users/hooks'
 
@@ -185,7 +185,7 @@ function ChannelPage() {
         </h2>
 
         {videosPending && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               // biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholders have no identity
               <div key={i} className="overflow-hidden rounded-lg border border-border">
@@ -205,9 +205,9 @@ function ChannelPage() {
 
         {!videosPending && videos.length > 0 && (
           <>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
               {videos.map((video) => (
-                <ChannelVideoCard key={video.videoId} video={video} isOwner={isOwner} />
+                <VideoCard key={video.videoId} video={video} hideChannelInfo isOwner={isOwner} />
               ))}
             </div>
 
