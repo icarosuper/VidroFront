@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { Pencil, Users } from 'lucide-react'
-import { useState } from 'react'
+import { Camera, Pencil, Users } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
@@ -14,7 +14,8 @@ import { Separator } from '#/components/ui/separator'
 import { Skeleton } from '#/components/ui/skeleton'
 import { useIsAuthenticated } from '#/features/auth/hooks'
 import { EditChannelForm } from '#/features/channels/components/EditChannelForm'
-import { useChannel } from '#/features/channels/hooks'
+import { SubscribeButton } from '#/features/channels/components/SubscribeButton'
+import { useChannel, useUploadChannelAvatar } from '#/features/channels/hooks'
 import { ChannelVideoCard } from '#/features/videos/components/ChannelVideoCard'
 import { useChannelVideos } from '#/features/videos/hooks'
 import { useCurrentUser } from '#/features/users/hooks'
@@ -45,9 +46,11 @@ function ChannelPage() {
   const { username, channel: handle } = Route.useParams()
   const isAuthenticated = useIsAuthenticated()
   const [editOpen, setEditOpen] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
 
   const { data: channel, isPending: channelPending, isError, error } = useChannel(username, handle)
   const { data: currentUser } = useCurrentUser()
+  const uploadAvatar = useUploadChannelAvatar(username, handle)
   const {
     data: videosData,
     isPending: videosPending,
@@ -57,6 +60,14 @@ function ChannelPage() {
   } = useChannelVideos(channel?.channelId)
 
   const isOwner = isAuthenticated && !!currentUser && !!channel && currentUser.userId === channel.ownerId
+  const canSubscribe = isAuthenticated && !isOwner
+
+  function handleAvatarFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    uploadAvatar.mutate(file)
+    e.target.value = ''
+  }
 
   const videos = videosData?.pages.flatMap((page) => page.videos) ?? []
   const channelInitial = channel?.name.charAt(0).toUpperCase() ?? '?'
@@ -81,14 +92,36 @@ function ChannelPage() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-start gap-6">
-                {/* Large channel avatar */}
-                <Avatar className="h-24 w-24 shrink-0 rounded-lg">
-                  <AvatarImage src={channel.avatarUrl ?? undefined} alt={channel.name} />
-                  <AvatarFallback className="text-3xl rounded-lg">{channelInitial}</AvatarFallback>
-                </Avatar>
+                {/* Large channel avatar — clickable for owner */}
+                <div className="relative shrink-0">
+                  <Avatar className="h-24 w-24 rounded-lg">
+                    <AvatarImage src={channel.avatarUrl ?? undefined} alt={channel.name} />
+                    <AvatarFallback className="text-3xl rounded-lg">{channelInitial}</AvatarFallback>
+                  </Avatar>
+                  {isOwner && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => avatarInputRef.current?.click()}
+                        disabled={uploadAvatar.isPending}
+                        aria-label="Change avatar"
+                        className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 hover:opacity-100 transition-opacity disabled:cursor-not-allowed"
+                      >
+                        <Camera className="h-6 w-6 text-white" />
+                      </button>
+                      <input
+                        ref={avatarInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleAvatarFileChange}
+                      />
+                    </>
+                  )}
+                </div>
 
                 <div className="min-w-0 flex-1">
-                  {/* Name + edit */}
+                  {/* Name + edit + subscribe */}
                   <div className="flex items-center gap-2">
                     <h1 className="text-2xl font-bold leading-tight">{channel.name}</h1>
                     {isOwner && (
@@ -101,8 +134,11 @@ function ChannelPage() {
                         <Pencil className="h-4 w-4" />
                       </Button>
                     )}
+                    {canSubscribe && (
+                      <SubscribeButton username={username} handle={handle} initialIsFollowing={channel.isFollowing} />
+                    )}
                   </div>
-                  <p className="text-sm text-muted-foreground">{channel.ownerUsername}/{channel.handle}</p>
+                  <p className="text-sm text-muted-foreground">@{channel.ownerUsername}/{channel.handle}</p>
 
                   {/* Description */}
                   {channel.description && (

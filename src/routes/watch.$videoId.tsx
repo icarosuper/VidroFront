@@ -6,6 +6,8 @@ import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { Separator } from '#/components/ui/separator'
 import { useIsAuthenticated } from '#/features/auth/hooks'
+import { SubscribeButton } from '#/features/channels/components/SubscribeButton'
+import { useCurrentUser } from '#/features/users/hooks'
 import { getVideo } from '#/features/videos/api'
 import { VideoPlayer } from '#/features/videos/components/VideoPlayer'
 import { useReactToVideo, useRegisterView, useRemoveReaction, useVideo, videoKeys } from '#/features/videos/hooks'
@@ -41,6 +43,7 @@ function WatchPage() {
   const { videoId } = Route.useParams()
   const { data: video, isPending, isError, error } = useVideo(videoId)
   const isAuthenticated = useIsAuthenticated()
+  const { data: currentUser } = useCurrentUser()
   const registerView = useRegisterView(videoId)
   const reactToVideo = useReactToVideo(videoId)
   const removeReaction = useRemoveReaction(videoId)
@@ -75,6 +78,8 @@ function WatchPage() {
   const thumbnailUrl = video.thumbnailUrls[0] ?? undefined
   const channelInitial = video.channelName.charAt(0).toUpperCase()
   const isMutating = reactToVideo.isPending || removeReaction.isPending
+  const isOwnChannel = isAuthenticated && !!currentUser && currentUser.username === video.ownerUsername
+  const canSubscribe = isAuthenticated && !isOwnChannel
 
   function handleLike() {
     if (!isAuthenticated) return
@@ -128,26 +133,35 @@ function WatchPage() {
             <h1 className="text-xl font-bold leading-tight">{video.title}</h1>
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
-              {/* Channel info */}
-              <Link
-                to="/$username/$channel"
-                params={{ username: video.ownerUsername, channel: video.channelHandle }}
-                className="no-underline flex items-center gap-3 group"
-              >
-                <Avatar className="h-9 w-9">
-                  <AvatarImage
-                    src={video.channelAvatarUrl ?? undefined}
-                    alt={video.channelName}
+              {/* Channel info + subscribe */}
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/$username/$channel"
+                  params={{ username: video.ownerUsername, channel: video.channelHandle }}
+                  className="no-underline flex items-center gap-3 group"
+                >
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage
+                      src={video.channelAvatarUrl ?? undefined}
+                      alt={video.channelName}
+                    />
+                    <AvatarFallback>{channelInitial}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-sm font-medium group-hover:underline">{video.channelName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      @{video.ownerUsername}/{video.channelHandle}
+                    </p>
+                  </div>
+                </Link>
+                {canSubscribe && (
+                  <SubscribeButton
+                    username={video.ownerUsername}
+                    handle={video.channelHandle}
+                    initialIsFollowing={video.isFollowingChannel}
                   />
-                  <AvatarFallback>{channelInitial}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-sm font-medium group-hover:underline">{video.channelName}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {video.ownerUsername}/{video.channelHandle}
-                  </p>
-                </div>
-              </Link>
+                )}
+              </div>
 
               {/* Views + Reaction buttons */}
               <div className="flex items-center gap-3">
@@ -158,7 +172,7 @@ function WatchPage() {
                   variant={userReaction === 'like' ? 'default' : 'outline'}
                   size="sm"
                   onClick={handleLike}
-                  disabled={isMutating || !isAuthenticated}
+                  disabled={isMutating || !isAuthenticated || isOwnChannel}
                   title={isAuthenticated ? undefined : 'Sign in to react'}
                 >
                   <ThumbsUp className="mr-1.5 h-4 w-4" />
@@ -168,7 +182,7 @@ function WatchPage() {
                   variant={userReaction === 'dislike' ? 'default' : 'outline'}
                   size="sm"
                   onClick={handleDislike}
-                  disabled={isMutating || !isAuthenticated}
+                  disabled={isMutating || !isAuthenticated || isOwnChannel}
                   title={isAuthenticated ? undefined : 'Sign in to react'}
                 >
                   <ThumbsDown className="mr-1.5 h-4 w-4" />

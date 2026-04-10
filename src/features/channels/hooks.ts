@@ -1,5 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createChannel, getChannel, getUserChannels, updateChannel } from './api'
+import { toastApiError } from '#/shared/lib/toast-error'
+import {
+  createChannel,
+  followChannel,
+  getChannel,
+  getUserChannels,
+  unfollowChannel,
+  updateChannel,
+  uploadChannelAvatar,
+} from './api'
 import type { CreateChannelRequest, UpdateChannelRequest } from './types'
 
 export const channelKeys = {
@@ -41,6 +50,48 @@ export function useUpdateChannel(username: string, handle: string) {
 
   return useMutation({
     mutationFn: (data: UpdateChannelRequest) => updateChannel(handle, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: channelKeys.detail(username, handle),
+      })
+    },
+  })
+}
+
+export function useFollowChannel(username: string, handle: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => followChannel(username, handle),
+    onError: toastApiError,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: channelKeys.detail(username, handle),
+      })
+    },
+  })
+}
+
+export function useUnfollowChannel(username: string, handle: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => unfollowChannel(username, handle),
+    onError: toastApiError,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: channelKeys.detail(username, handle),
+      })
+    },
+  })
+}
+
+export function useUploadChannelAvatar(username: string, handle: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (file: File) => uploadChannelAvatar(handle, file),
+    onError: toastApiError,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: channelKeys.detail(username, handle),

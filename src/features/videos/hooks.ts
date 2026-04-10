@@ -127,6 +127,7 @@ export function useUpdateVideo(videoId: string) {
     mutationFn: (data: UpdateVideoRequest) => updateVideo(videoId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: videoKeys.detail(videoId) })
+      queryClient.invalidateQueries({ queryKey: ['videos', 'channel'] })
     },
   })
 }

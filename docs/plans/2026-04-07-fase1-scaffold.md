@@ -785,7 +785,7 @@ export const Route = createFileRoute('/$username/$channel')({
 
 function ChannelPage() {
   const { username, channel } = Route.useParams()
-  return <main className="page-container py-8"><p>Canal: {username}/{channel}</p></main>
+  return <main className="page-container py-8"><p>Canal: @{username}/{channel}</p></main>
 }
 ```
 

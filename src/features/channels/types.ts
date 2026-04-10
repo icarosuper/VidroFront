@@ -33,8 +33,14 @@ export type Channel = {
   name: string
   description: string | null
   followerCount: number
+  isFollowing: boolean
   ownerId: string
   ownerUsername: string
   avatarUrl: string | null
   ownerAvatarUrl: string | null
+}
+
+export type UploadAvatarResponse = {
+  uploadUrl: string
+  uploadExpiresAt: string
 }

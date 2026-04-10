@@ -67,6 +67,7 @@ export type Video = {
   commentCount: number
   thumbnailUrls: string[]
   videoUrl: string | null
+  isFollowingChannel: boolean
   createdAt: string
 }
 
