@@ -1,6 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { ReactionType } from '#/shared/types'
-import { VideoStatus } from '#/shared/types'
+import { ReactionType, VideoStatus } from '#/shared/types'
 import { toastApiError } from '#/shared/lib/toast-error'
 import {
   createVideo,
@@ -69,15 +68,26 @@ export function useReactToVideo(videoId: string) {
     onSuccess: (_data, reactionType) => {
       queryClient.setQueryData(videoKeys.detail(videoId), (prev: Video | undefined) => {
         if (!prev) return prev
-        const isLike = reactionType === 1
+        const isNewReactionLike = reactionType === ReactionType.Like
+        const previousReactionId = prev.userReaction?.id ?? null
+        const hadOppositeReaction =
+          previousReactionId !== null && previousReactionId !== reactionType
         return {
           ...prev,
-          likeCount: isLike
+          likeCount: isNewReactionLike
             ? prev.likeCount + 1
-            : prev.likeCount,
-          dislikeCount: isLike
-            ? prev.dislikeCount
-            : prev.dislikeCount + 1,
+            : hadOppositeReaction
+              ? prev.likeCount - 1
+              : prev.likeCount,
+          dislikeCount: !isNewReactionLike
+            ? prev.dislikeCount + 1
+            : hadOppositeReaction
+              ? prev.dislikeCount - 1
+              : prev.dislikeCount,
+          userReaction: {
+            id: reactionType,
+            value: isNewReactionLike ? 'Like' : 'Dislike',
+          },
         }
       })
     },
@@ -91,7 +101,16 @@ export function useRemoveReaction(videoId: string) {
     mutationFn: () => removeReaction(videoId),
     onError: toastApiError,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: videoKeys.detail(videoId) })
+      queryClient.setQueryData(videoKeys.detail(videoId), (prev: Video | undefined) => {
+        if (!prev) return prev
+        const wasLike = prev.userReaction?.id === ReactionType.Like
+        return {
+          ...prev,
+          likeCount: wasLike ? prev.likeCount - 1 : prev.likeCount,
+          dislikeCount: !wasLike ? prev.dislikeCount - 1 : prev.dislikeCount,
+          userReaction: null,
+        }
+      })
     },
   })
 }

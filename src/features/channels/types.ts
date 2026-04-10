@@ -20,6 +20,7 @@ export type ChannelSummary = {
   name: string
   description: string | null
   followerCount: number
+  isFollowing: boolean
   avatarUrl: string | null
 }
 

@@ -68,6 +68,7 @@ export type Video = {
   thumbnailUrls: string[]
   videoUrl: string | null
   isFollowingChannel: boolean
+  userReaction: EnumValue | null
   createdAt: string
 }
 

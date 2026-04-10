@@ -30,16 +30,19 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
     links: [{ rel: 'stylesheet', href: appCss }],
   }),
-  loader: async () => {
+  beforeLoad: async () => {
     const isServer = typeof window === 'undefined'
-    if (!isServer) return { initialToken: null }
+    if (!isServer) return { accessToken: null as string | null }
 
     try {
-      const initialToken = await getInitialToken()
-      return { initialToken }
+      const accessToken = await getInitialToken()
+      return { accessToken }
     } catch {
-      return { initialToken: null }
+      return { accessToken: null as string | null }
     }
+  },
+  loader: ({ context }) => {
+    return { initialToken: context.accessToken }
   },
   shellComponent: RootDocument,
   component: RootApp,

@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { ThumbsDown, ThumbsUp } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
@@ -9,21 +9,23 @@ import { useIsAuthenticated } from '#/features/auth/hooks'
 import { SubscribeButton } from '#/features/channels/components/SubscribeButton'
 import { useCurrentUser } from '#/features/users/hooks'
 import { getVideo } from '#/features/videos/api'
+import { fetchVideoSsr } from '#/features/videos/server'
 import { VideoPlayer } from '#/features/videos/components/VideoPlayer'
 import { useReactToVideo, useRegisterView, useRemoveReaction, useVideo, videoKeys } from '#/features/videos/hooks'
 import { ReactionType } from '#/shared/types'
 
 export const Route = createFileRoute('/watch/$videoId')({
-  loader: async ({ params, context: { queryClient } }) => {
+  loader: async ({ params, context: { queryClient, accessToken } }) => {
     await queryClient.prefetchQuery({
       queryKey: videoKeys.detail(params.videoId),
-      queryFn: () => getVideo(params.videoId),
+      queryFn: () =>
+        typeof window === 'undefined'
+          ? fetchVideoSsr(params.videoId, accessToken)
+          : getVideo(params.videoId),
     })
   },
   component: WatchPage,
 })
-
-type UserReaction = 'like' | 'dislike' | null
 
 function formatCount(count: number): string {
   if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`
@@ -47,8 +49,6 @@ function WatchPage() {
   const registerView = useRegisterView(videoId)
   const reactToVideo = useReactToVideo(videoId)
   const removeReaction = useRemoveReaction(videoId)
-
-  const [userReaction, setUserReaction] = useState<UserReaction>(null)
 
   useEffect(() => {
     const videoIsReady = video !== undefined
@@ -84,28 +84,24 @@ function WatchPage() {
   function handleLike() {
     if (!isAuthenticated) return
 
-    const isAlreadyLiked = userReaction === 'like'
+    const isAlreadyLiked = video.userReaction?.id === ReactionType.Like
 
     if (isAlreadyLiked) {
       removeReaction.mutate()
-      setUserReaction(null)
     } else {
       reactToVideo.mutate(ReactionType.Like)
-      setUserReaction('like')
     }
   }
 
   function handleDislike() {
     if (!isAuthenticated) return
 
-    const isAlreadyDisliked = userReaction === 'dislike'
+    const isAlreadyDisliked = video.userReaction?.id === ReactionType.Dislike
 
     if (isAlreadyDisliked) {
       removeReaction.mutate()
-      setUserReaction(null)
     } else {
       reactToVideo.mutate(ReactionType.Dislike)
-      setUserReaction('dislike')
     }
   }
 
@@ -169,7 +165,7 @@ function WatchPage() {
                   {formatCount(video.viewCount)} views
                 </span>
                 <Button
-                  variant={userReaction === 'like' ? 'default' : 'outline'}
+                  variant={video.userReaction?.id === ReactionType.Like ? 'default' : 'outline'}
                   size="sm"
                   onClick={handleLike}
                   disabled={isMutating || !isAuthenticated || isOwnChannel}
@@ -179,7 +175,7 @@ function WatchPage() {
                   {formatCount(video.likeCount)}
                 </Button>
                 <Button
-                  variant={userReaction === 'dislike' ? 'default' : 'outline'}
+                  variant={video.userReaction?.id === ReactionType.Dislike ? 'default' : 'outline'}
                   size="sm"
                   onClick={handleDislike}
                   disabled={isMutating || !isAuthenticated || isOwnChannel}
