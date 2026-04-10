@@ -13,7 +13,7 @@ O projeto é construído fase por fase. Planos detalhados em `docs/plans/`:
 1. **Scaffold** — TanStack Start + shadcn + estrutura + api-client
 2. **Auth** — signIn, signUp, signOut, renovação de token, proteção de rota
 3. **Settings** — perfil do usuário, avatar
-4. **Channel** — create/edit/delete, dashboard
+4. **Channel** — create/edit/delete
 5. **Home + Watch** — trending, feed, HLS player, reações
 6. **Public channel/user pages** — SSR + SEO
 7. **Upload** — presigned URL, progresso, polling de status

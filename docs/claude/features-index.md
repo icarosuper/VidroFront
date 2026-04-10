@@ -99,15 +99,22 @@ Trending, feed, detalhe, reações, upload (create + presigned + polling de stat
 
 ## comments — `src/features/comments/`
 
-**Status:** tipos criados, API/hooks ainda não implementados (fase 8).
-
 | Arquivo | Conteúdo |
 |---|---|
-| `api.ts` | *(vazio)* |
-| `hooks.ts` | *(vazio)* |
+| `api.ts` | `listComments`, `listReplies`, `addComment`, `editComment`, `deleteComment`, `reactToComment`, `removeCommentReaction` |
+| `hooks.ts` | `useComments`, `useReplies`, `useAddComment`, `useEditComment`, `useDeleteComment`, `useReactToComment`, `useRemoveCommentReaction`, `commentKeys` |
 | `types.ts` | `CommentSummary`, `CommentsPage`, `ReplySummary`, `RepliesPage` |
+| `components/CommentList.tsx` | Lista paginada de comentários com sort Recent/Popular, form de adicionar |
+| `components/ReplyList.tsx` | Replies lazy-loaded por comentário, form de reply inline |
 
-Endpoints planejados virão da fase 8 (ver `docs/plans/`).
+**Endpoints backend:**
+- `GET /v1/videos/{videoId}/comments?sort&limit&cursor`
+- `GET /v1/comments/{commentId}/replies?limit&cursor`
+- `POST /v1/videos/{videoId}/comments`
+- `PUT /v1/comments/{commentId}`
+- `DELETE /v1/comments/{commentId}`
+- `POST /v1/comments/{commentId}/reactions`
+- `DELETE /v1/comments/{commentId}/reactions`
 
 ---
 

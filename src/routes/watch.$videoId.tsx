@@ -7,6 +7,7 @@ import { Button } from '#/components/ui/button'
 import { Separator } from '#/components/ui/separator'
 import { useIsAuthenticated } from '#/features/auth/hooks'
 import { SubscribeButton } from '#/features/channels/components/SubscribeButton'
+import { CommentList } from '#/features/comments/components/CommentList'
 import { useCurrentUser } from '#/features/users/hooks'
 import { getVideo } from '#/features/videos/api'
 import { fetchVideoSsr } from '#/features/videos/server'
@@ -207,6 +208,12 @@ function WatchPage() {
                 ))}
               </div>
             )}
+
+            <Separator className="my-6" />
+
+            <div className="max-w-2xl">
+              <CommentList videoId={video.videoId} currentUserId={currentUser?.id} />
+            </div>
           </div>
         </div>
       </div>
