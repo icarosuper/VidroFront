@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Eye, Pencil, ThumbsDown, ThumbsUp } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
@@ -55,8 +55,31 @@ function visibilityBadgeVariant(visibilityId: number): 'default' | 'secondary' |
 
 export function VideoCard({ video, hideChannelInfo = false, isOwner = false }: VideoCardProps) {
   const [editOpen, setEditOpen] = useState(false)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const hasExtraThumbnails = video.thumbnailUrls.length > 1
 
-  const thumbnailUrl = video.thumbnailUrls[0] ?? null
+  function startCycling() {
+    if (!hasExtraThumbnails) return
+    let index = 1
+    setHoveredIndex(index)
+    intervalRef.current = setInterval(() => {
+      index = (index % (video.thumbnailUrls.length - 1)) + 1
+      setHoveredIndex(index)
+    }, 800)
+  }
+
+  function stopCycling() {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    setHoveredIndex(null)
+  }
+
+  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current) }, [])
+
+  const thumbnailUrl = hoveredIndex !== null ? (video.thumbnailUrls[hoveredIndex] ?? null) : (video.thumbnailUrls[0] ?? null)
   const channelInitial = (video.channelName ?? video.channelHandle).charAt(0).toUpperCase()
   const viewCountFormatted = formatCount(video.viewCount)
   const likeCountFormatted = formatCount(video.likeCount)
@@ -74,7 +97,11 @@ export function VideoCard({ video, hideChannelInfo = false, isOwner = false }: V
     <>
       <Link to="/watch/$videoId" params={{ videoId: video.videoId }} className="no-underline">
         <Card className="overflow-hidden transition-shadow hover:shadow-md border-0 shadow-none bg-transparent rounded-xl p-3 gap-0">
-          <div className="relative aspect-video w-full bg-muted rounded-xl overflow-hidden">
+          <div
+            className="relative aspect-video w-full bg-muted rounded-xl overflow-hidden"
+            onMouseEnter={startCycling}
+            onMouseLeave={stopCycling}
+          >
             {thumbnailUrl
               ? (
                 <img
