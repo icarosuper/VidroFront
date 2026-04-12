@@ -19,7 +19,7 @@ export const videoKeys = {
   trending: () => ['videos', 'trending'] as const,
   feed: () => ['videos', 'feed'] as const,
   detail: (videoId: string) => ['videos', videoId] as const,
-  channelVideos: (channelId: string) => ['videos', 'channel', channelId] as const,
+  channelVideos: (username: string, handle: string) => ['videos', 'channel', username, handle] as const,
 }
 
 const TRENDING_LIMIT = 20
@@ -133,9 +133,9 @@ export function useVideoStatus(videoId: string | null) {
   })
 }
 
-export function useCreateVideo(channelId: string) {
+export function useCreateVideo(username: string, handle: string) {
   return useMutation({
-    mutationFn: (data: CreateVideoRequest) => createVideo(channelId, data),
+    mutationFn: (data: CreateVideoRequest) => createVideo(username, handle, data),
   })
 }
 
@@ -153,17 +153,17 @@ export function useUpdateVideo(videoId: string) {
 
 const CHANNEL_VIDEOS_LIMIT = 20
 
-export function useChannelVideos(channelId: string | undefined) {
+export function useChannelVideos(username: string | undefined, handle: string | undefined) {
   return useInfiniteQuery({
-    queryKey: videoKeys.channelVideos(channelId ?? ''),
+    queryKey: videoKeys.channelVideos(username ?? '', handle ?? ''),
     queryFn: ({ signal, pageParam }) =>
-      getChannelVideos(channelId!, CHANNEL_VIDEOS_LIMIT, pageParam as string | undefined, signal),
+      getChannelVideos(username!, handle!, CHANNEL_VIDEOS_LIMIT, pageParam as string | undefined, signal),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) =>
       lastPage.nextCursor
         ? lastPage.nextCursor
         : undefined,
-    enabled: !!channelId,
+    enabled: !!username && !!handle,
   })
 }
 

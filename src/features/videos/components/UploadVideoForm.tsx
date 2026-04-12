@@ -177,6 +177,7 @@ export function UploadVideoForm({ username }: Props) {
   })
 
   const selectedChannelId = watch('channelId')
+  const selectedChannel = channels.find((c) => c.channelId === selectedChannelId)
 
   useEffect(() => {
     const firstChannel = channels[0]
@@ -185,7 +186,7 @@ export function UploadVideoForm({ username }: Props) {
       setValue('channelId', firstChannel.channelId)
     }
   }, [channels, selectedChannelId, setValue])
-  const createVideo = useCreateVideo(selectedChannelId ?? '')
+  const createVideo = useCreateVideo(username, selectedChannel?.handle ?? '')
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]

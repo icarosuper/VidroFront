@@ -39,22 +39,24 @@ export function removeReaction(videoId: string, signal?: AbortSignal) {
 }
 
 export function getChannelVideos(
-  channelId: string,
+  username: string,
+  handle: string,
   limit: number,
   cursor: string | undefined,
   signal?: AbortSignal,
 ) {
   const params = new URLSearchParams({ limit: String(limit) })
   if (cursor) params.set('cursor', cursor)
-  return apiClient.get<ChannelVideosPage>(`/v1/channels/${channelId}/videos?${params.toString()}`, signal)
+  return apiClient.get<ChannelVideosPage>(`/v1/users/${username}/channels/${handle}/videos?${params.toString()}`, signal)
 }
 
 export function createVideo(
-  channelId: string,
+  username: string,
+  handle: string,
   data: CreateVideoRequest,
   signal?: AbortSignal,
 ) {
-  return apiClient.post<CreateVideoResponse>(`/v1/channels/${channelId}/videos`, data, signal)
+  return apiClient.post<CreateVideoResponse>(`/v1/users/${username}/channels/${handle}/videos`, data, signal)
 }
 
 export function uploadVideoFile(

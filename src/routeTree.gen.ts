@@ -17,6 +17,7 @@ import { Route as UsernameRouteImport } from './routes/$username'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UsernameIndexRouteImport } from './routes/$username.index'
 import { Route as WatchVideoIdRouteImport } from './routes/watch.$videoId'
+import { Route as PlaylistsPlaylistIdRouteImport } from './routes/playlists.$playlistId'
 import { Route as UsernameChannelRouteImport } from './routes/$username.$channel'
 
 const UploadRoute = UploadRouteImport.update({
@@ -59,6 +60,11 @@ const WatchVideoIdRoute = WatchVideoIdRouteImport.update({
   path: '/watch/$videoId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlaylistsPlaylistIdRoute = PlaylistsPlaylistIdRouteImport.update({
+  id: '/playlists/$playlistId',
+  path: '/playlists/$playlistId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UsernameChannelRoute = UsernameChannelRouteImport.update({
   id: '/$channel',
   path: '/$channel',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/upload': typeof UploadRoute
   '/$username/$channel': typeof UsernameChannelRoute
+  '/playlists/$playlistId': typeof PlaylistsPlaylistIdRoute
   '/watch/$videoId': typeof WatchVideoIdRoute
   '/$username/': typeof UsernameIndexRoute
 }
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/upload': typeof UploadRoute
   '/$username/$channel': typeof UsernameChannelRoute
+  '/playlists/$playlistId': typeof PlaylistsPlaylistIdRoute
   '/watch/$videoId': typeof WatchVideoIdRoute
   '/$username': typeof UsernameIndexRoute
 }
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/upload': typeof UploadRoute
   '/$username/$channel': typeof UsernameChannelRoute
+  '/playlists/$playlistId': typeof PlaylistsPlaylistIdRoute
   '/watch/$videoId': typeof WatchVideoIdRoute
   '/$username/': typeof UsernameIndexRoute
 }
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/upload'
     | '/$username/$channel'
+    | '/playlists/$playlistId'
     | '/watch/$videoId'
     | '/$username/'
   fileRoutesByTo: FileRoutesByTo
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/upload'
     | '/$username/$channel'
+    | '/playlists/$playlistId'
     | '/watch/$videoId'
     | '/$username'
   id:
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/upload'
     | '/$username/$channel'
+    | '/playlists/$playlistId'
     | '/watch/$videoId'
     | '/$username/'
   fileRoutesById: FileRoutesById
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
   UploadRoute: typeof UploadRoute
+  PlaylistsPlaylistIdRoute: typeof PlaylistsPlaylistIdRoute
   WatchVideoIdRoute: typeof WatchVideoIdRoute
 }
 
@@ -201,6 +214,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WatchVideoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/playlists/$playlistId': {
+      id: '/playlists/$playlistId'
+      path: '/playlists/$playlistId'
+      fullPath: '/playlists/$playlistId'
+      preLoaderRoute: typeof PlaylistsPlaylistIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$username/$channel': {
       id: '/$username/$channel'
       path: '/$channel'
@@ -232,6 +252,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
   UploadRoute: UploadRoute,
+  PlaylistsPlaylistIdRoute: PlaylistsPlaylistIdRoute,
   WatchVideoIdRoute: WatchVideoIdRoute,
 }
 export const routeTree = rootRouteImport

@@ -88,8 +88,8 @@ Trending, feed, detalhe, reações, upload (create + presigned + polling de stat
 - `POST /v1/videos/{videoId}/view`
 - `POST /v1/videos/{videoId}/react`
 - `DELETE /v1/videos/{videoId}/react`
-- `GET /v1/channels/{channelId}/videos?limit&cursor`
-- `POST /v1/channels/{channelId}/videos` (retorna `uploadUrl` presigned)
+- `GET /v1/users/{username}/channels/{handle}/videos?limit&cursor`
+- `POST /v1/users/{username}/channels/{handle}/videos` (retorna `uploadUrl` presigned)
 - `PUT /v1/videos/{videoId}`
 - `POST /v1/videos/{videoId}/thumbnail` (presigned)
 
@@ -120,13 +120,25 @@ Trending, feed, detalhe, reações, upload (create + presigned + polling de stat
 
 ## playlists — `src/features/playlists/`
 
-**Status:** stubs vazios (fase 9).
-
 | Arquivo | Conteúdo |
 |---|---|
-| `api.ts` | *(vazio)* |
-| `hooks.ts` | *(vazio)* |
-| `types.ts` | *(vazio)* |
+| `api.ts` | `createPlaylist`, `getPlaylist`, `updatePlaylist`, `deletePlaylist`, `listChannelPlaylists`, `listUserPlaylists`, `addVideoToPlaylist`, `removeVideoFromPlaylist` |
+| `hooks.ts` | `usePlaylist`, `useChannelPlaylists`, `useUserPlaylists`, `useCreatePlaylist`, `useUpdatePlaylist`, `useDeletePlaylist`, `useAddVideoToPlaylist`, `useRemoveVideoFromPlaylist`, `playlistKeys` |
+| `types.ts` | `PlaylistSummary`, `Playlist`, `PlaylistItem`, `PlaylistsPage`, `CreatePlaylistRequest`, `CreatePlaylistResponse`, `UpdatePlaylistRequest` |
+| `components/PlaylistCard.tsx` | Card resumido com videoCount e badge de visibilidade |
+| `components/CreatePlaylistForm.tsx` | Form de criação (nome, descrição, visibilidade; scope/channelId via props) |
+| `components/EditPlaylistForm.tsx` | Form de edição (nome, descrição, visibilidade) |
+| `components/PlaylistItemList.tsx` | Lista de vídeos com thumbnail, duração e botão de remoção (owner-only) |
+
+**Endpoints backend:**
+- `POST /v1/playlists`
+- `GET /v1/playlists/{playlistId}`
+- `PUT /v1/playlists/{playlistId}`
+- `DELETE /v1/playlists/{playlistId}`
+- `GET /v1/users/{username}/channels/{handle}/playlists?limit&cursor`
+- `GET /v1/users/{username}/playlists?limit&cursor`
+- `POST /v1/playlists/{playlistId}/items`
+- `DELETE /v1/playlists/{playlistId}/items/{videoId}`
 
 ---
 
@@ -138,9 +150,10 @@ Trending, feed, detalhe, reações, upload (create + presigned + polling de stat
 | `/watch/$videoId` | `watch.$videoId.tsx` | SSR | pública | videos, channels, comments |
 | `/search` | `search.tsx` | SSR | pública | videos |
 | `/$username` | `$username.tsx` + `$username.index.tsx` | SSR | pública | users, channels |
-| `/$username/$channel` | `$username.$channel.tsx` | SSR | pública | channels, videos |
+| `/$username/$channel` | `$username.$channel.tsx` | SSR | pública | channels, videos, playlists |
+| `/playlists/$playlistId` | `playlists.$playlistId.tsx` | SSR | opcional | playlists |
 | `/upload` | `upload.tsx` | client-only | **required** | videos |
-| `/dashboard` | `dashboard.tsx` | client-only | **required** | channels, videos |
+| `/dashboard` | `dashboard.tsx` | client-only | **required** | playlists |
 | `/settings` | `settings.tsx` | client-only | **required** | users |
 
 ## Shared
