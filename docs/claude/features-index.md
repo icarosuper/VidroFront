@@ -1,17 +1,17 @@
 # Features index
 
-Mapa de cada feature com arquivos, endpoints backend consumidos, hooks expostos e tipos principais. **Atualize este doc sempre que adicionar/remover endpoints, hooks ou componentes.**
+Map cada feature: arquivos, endpoints, hooks, tipos. **Atualize sempre q add/remove endpoints, hooks ou components.**
 
 ## auth — `src/features/auth/`
 
-Autenticação (signup/signin/signout), renovação de token, modal global. Ver [auth.md](auth.md) para detalhes do padrão.
+Auth (signup/signin/signout), token renew, modal global. Ver [auth.md](auth.md) padrão.
 
 | Arquivo | Conteúdo |
 |---|---|
 | `server.ts` | `serverSignUp`, `serverSignIn`, `serverSignOut`, `renewToken`, `getInitialToken` |
 | `hooks.tsx` | `AuthProvider`, `AuthModalProvider`, `useIsAuthenticated`, `useSignIn`, `useSignUp`, `useSignOut`, `useAuthModal` |
 | `types.ts` | `SignUpRequest`, `SignInRequest`, `AuthTokens` |
-| `components/AuthModal.tsx` | Modal global de login/signup |
+| `components/AuthModal.tsx` | Modal global login/signup |
 | `components/SignInForm.tsx` | |
 | `components/SignUpForm.tsx` | |
 
@@ -25,7 +25,7 @@ Autenticação (signup/signin/signout), renovação de token, modal global. Ver 
 
 ## users — `src/features/users/`
 
-Perfil do usuário autenticado e upload de avatar.
+Perfil usuário autenticado + avatar upload.
 
 | Arquivo | Conteúdo |
 |---|---|
@@ -37,13 +37,13 @@ Perfil do usuário autenticado e upload de avatar.
 
 **Endpoints backend:**
 - `GET /v1/users/me`
-- `POST /v1/users/me/avatar` (retorna presigned URL; upload PUT direto no storage)
+- `POST /v1/users/me/avatar` (retorna presigned URL; upload PUT direto storage)
 
 ---
 
 ## channels — `src/features/channels/`
 
-CRUD de canais, follow/unfollow, avatar.
+CRUD canais, follow/unfollow, avatar.
 
 | Arquivo | Conteúdo |
 |---|---|
@@ -52,7 +52,7 @@ CRUD de canais, follow/unfollow, avatar.
 | `types.ts` | `Channel`, `ChannelSummary`, `ChannelsResponse`, `CreateChannelRequest/Response`, `UpdateChannelRequest`, `UploadAvatarResponse` |
 | `components/CreateChannelForm.tsx` | |
 | `components/EditChannelForm.tsx` | |
-| `components/SubscribeButton.tsx` | Toggle follow/unfollow com optimistic feel |
+| `components/SubscribeButton.tsx` | Toggle follow/unfollow c/ optimistic feel |
 
 **Endpoints backend:**
 - `GET /v1/users/{username}/channels`
@@ -67,18 +67,18 @@ CRUD de canais, follow/unfollow, avatar.
 
 ## videos — `src/features/videos/`
 
-Trending, feed, detalhe, reações, upload (create + presigned + polling de status), thumbnail, CRUD, listagem por canal.
+Trending, feed, detalhe, reações, upload (create + presigned + status polling), thumbnail, CRUD, listagem por canal.
 
 | Arquivo | Conteúdo |
 |---|---|
 | `api.ts` | `getTrending`, `getFeed`, `getVideo`, `registerView`, `reactToVideo`, `removeReaction`, `getChannelVideos`, `createVideo`, `uploadVideoFile` (XHR c/ progresso), `updateVideo`, `uploadThumbnail` |
 | `hooks.ts` | `useTrending`, `useFeed`, `useVideo`, `useRegisterView`, `useReactToVideo`, `useRemoveReaction`, `useVideoStatus`, `useCreateVideo`, `useUpdateVideo`, `useChannelVideos`, `useUploadThumbnail` |
-| `server.ts` | `fetchVideoSsr` — usado pelo loader de `/watch/$videoId` |
+| `server.ts` | `fetchVideoSsr` — loader de `/watch/$videoId` |
 | `types.ts` | `Video`, `VideoSummary`, `ChannelVideoSummary`, `TrendingResponse`, `FeedPage`, `ChannelVideosPage`, `CreateVideoRequest/Response`, `UpdateVideoRequest/Response`, `ThumbnailUploadResponse` |
-| `components/VideoCard.tsx` | Card reutilizável (home/feed e canal). Props: `hideChannelInfo` oculta avatar/nome do canal; `isOwner` exibe botão de editar, overlay de status e badge de visibilidade |
+| `components/VideoCard.tsx` | Card reutilizável (home/feed e canal). Props: `hideChannelInfo` oculta avatar/nome canal; `isOwner` exibe btn editar, overlay status e badge visibilidade |
 | `components/VideoGrid.tsx` | |
 | `components/VideoPlayer.tsx` | Player HLS |
-| `components/UploadVideoForm.tsx` | Cria vídeo + faz upload + polling |
+| `components/UploadVideoForm.tsx` | Cria vídeo + upload + polling |
 | `components/EditVideoForm.tsx` | |
 
 **Endpoints backend:**
@@ -93,7 +93,7 @@ Trending, feed, detalhe, reações, upload (create + presigned + polling de stat
 - `PUT /v1/videos/{videoId}`
 - `POST /v1/videos/{videoId}/thumbnail` (presigned)
 
-**Upload flow:** `createVideo` → PUT direto no `uploadUrl` com progresso via `XMLHttpRequest` → `useVideoStatus` faz polling até `VideoStatus.Ready` ou `Failed`.
+**Upload flow:** `createVideo` → PUT direto `uploadUrl` c/ progresso via `XMLHttpRequest` → `useVideoStatus` polling até `VideoStatus.Ready` ou `Failed`.
 
 ---
 
@@ -104,8 +104,8 @@ Trending, feed, detalhe, reações, upload (create + presigned + polling de stat
 | `api.ts` | `listComments`, `listReplies`, `addComment`, `editComment`, `deleteComment`, `reactToComment`, `removeCommentReaction` |
 | `hooks.ts` | `useComments`, `useReplies`, `useAddComment`, `useEditComment`, `useDeleteComment`, `useReactToComment`, `useRemoveCommentReaction`, `commentKeys` |
 | `types.ts` | `CommentSummary`, `CommentsPage`, `ReplySummary`, `RepliesPage` |
-| `components/CommentList.tsx` | Lista paginada de comentários com sort Recent/Popular, form de adicionar |
-| `components/ReplyList.tsx` | Replies lazy-loaded por comentário, form de reply inline |
+| `components/CommentList.tsx` | Lista paginada c/ sort Recent/Popular, form add |
+| `components/ReplyList.tsx` | Replies lazy-loaded por comentário, form reply inline |
 
 **Endpoints backend:**
 - `GET /v1/videos/{videoId}/comments?sort&limit&cursor`
@@ -125,10 +125,10 @@ Trending, feed, detalhe, reações, upload (create + presigned + polling de stat
 | `api.ts` | `createPlaylist`, `getPlaylist`, `updatePlaylist`, `deletePlaylist`, `listChannelPlaylists`, `listUserPlaylists`, `addVideoToPlaylist`, `removeVideoFromPlaylist` |
 | `hooks.ts` | `usePlaylist`, `useChannelPlaylists`, `useUserPlaylists`, `useCreatePlaylist`, `useUpdatePlaylist`, `useDeletePlaylist`, `useAddVideoToPlaylist`, `useRemoveVideoFromPlaylist`, `playlistKeys` |
 | `types.ts` | `PlaylistSummary`, `Playlist`, `PlaylistItem`, `PlaylistsPage`, `CreatePlaylistRequest`, `CreatePlaylistResponse`, `UpdatePlaylistRequest` |
-| `components/PlaylistCard.tsx` | Card resumido com videoCount e badge de visibilidade |
-| `components/CreatePlaylistForm.tsx` | Form de criação (nome, descrição, visibilidade; scope/channelId via props) |
-| `components/EditPlaylistForm.tsx` | Form de edição (nome, descrição, visibilidade) |
-| `components/PlaylistItemList.tsx` | Lista de vídeos com thumbnail, duração e botão de remoção (owner-only) |
+| `components/PlaylistCard.tsx` | Card resumido c/ videoCount e badge visibilidade |
+| `components/CreatePlaylistForm.tsx` | Form criação (nome, descrição, visibilidade; scope/channelId via props) |
+| `components/EditPlaylistForm.tsx` | Form edição (nome, descrição, visibilidade) |
+| `components/PlaylistItemList.tsx` | Lista vídeos c/ thumbnail, duração e btn remoção (owner-only) |
 
 **Endpoints backend:**
 - `POST /v1/playlists`
@@ -163,7 +163,7 @@ Trending, feed, detalhe, reações, upload (create + presigned + polling de stat
 | api client | `src/shared/lib/api-client.ts` | `apiClient`, `ApiClientError`, `setRenewTokenCallback` |
 | token store | `src/shared/lib/token-store.ts` | `tokenStore` (get/set/clear/subscribe) |
 | tipos base | `src/shared/types.ts` | `ApiSuccess`, `ApiError`, `ValidationError`, `EnumValue`, `CursorPage`, `PagedResult`, `API_ERROR_CODES`, `VideoStatus`, `VideoVisibility`, `ReactionType`, `PlaylistVisibility`, `PlaylistScope`, `CommentSortOrder` |
-| erros | `src/shared/lib/error-messages.ts` | Mapa `code → mensagem user-facing` |
+| erros | `src/shared/lib/error-messages.ts` | Map `code → mensagem user-facing` |
 | toast | `src/shared/lib/toast-error.ts` | `toastApiError(error)` |
 | components globais | `src/components/` | `Header`, `ThemeToggle`, `ui/*` (shadcn) |
 | integração | `src/integrations/tanstack-query/` | `QueryClient` + devtools |

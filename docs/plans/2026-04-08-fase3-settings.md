@@ -2,11 +2,11 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Settings page where authenticated users can edit their profile (username, email, bio, birthdate, gender) and upload/remove their avatar.
+**Goal:** Settings page — auth users edit profile (username, email, bio, birthdate, gender) + upload/remove avatar.
 
-**Architecture:** Vertical slice in `src/features/users/` — types, api.ts (apiClient calls), hooks.ts (TanStack Query). The `apiClient` gains an `upload` method for multipart form-data. The `/settings` route (already scaffolded) renders the assembled page component.
+**Architecture:** Vertical slice in `src/features/users/` — types, api.ts (apiClient calls), hooks.ts (TanStack Query). `apiClient` gets `upload` method for multipart form-data. `/settings` route (already scaffolded) renders assembled page component.
 
-**Tech Stack:** TanStack Query, react-hook-form + zod, shadcn/ui (Select, Textarea, Avatar, Card, Separator — to be installed), Tailwind CSS v4.
+**Tech Stack:** TanStack Query, react-hook-form + zod, shadcn/ui (Select, Textarea, Avatar, Card, Separator — install needed), Tailwind CSS v4.
 
 ---
 
@@ -61,14 +61,14 @@ No test needed — pure type declarations.
 
 ## Task 3: Extend `apiClient` with `upload` method
 
-`apiClient.post` always sets `Content-Type: application/json` and JSON-stringifies the body. Avatar upload requires `multipart/form-data` — the browser must set `Content-Type` itself (with boundary). We need a dedicated `upload` method.
+`apiClient.post` always sets `Content-Type: application/json` + JSON-stringifies body. Avatar upload needs `multipart/form-data` — browser must set `Content-Type` itself (with boundary). Need dedicated `upload` method.
 
 **Files:**
 - Modify: `src/shared/lib/api-client.ts`
 
 **Step 1: Add `uploadRequest` helper and expose it as `apiClient.upload`**
 
-Add the following private helper right after the existing `request` function (before the `apiClient` object):
+Add private helper right after existing `request` function (before `apiClient` object):
 
 ```ts
 async function uploadRequest<T>(
@@ -159,7 +159,7 @@ export function getGenderOptions(signal?: AbortSignal) {
 }
 ```
 
-No isolated test — these are thin wrappers; integration covered by hook tests.
+No isolated test — thin wrappers; integration covered by hook tests.
 
 ---
 
@@ -235,7 +235,7 @@ export function useDeleteAvatar() {
 }
 ```
 
-> **Note on `onSuccess` typing:** The `prev` parameter type in `setQueryData` callbacks should be `UserProfile | undefined`. Replace the generic cast above with the explicit import:
+> **Note on `onSuccess` typing:** `prev` param type in `setQueryData` callbacks should be `UserProfile | undefined`. Replace generic cast with explicit import:
 ```ts
 import type { UserProfile } from './types'
 // ...
@@ -246,13 +246,13 @@ onSuccess: ({ avatarUrl }) => {
   })
 },
 ```
-Apply the same pattern in `useDeleteAvatar`.
+Apply same pattern in `useDeleteAvatar`.
 
 ---
 
 ## Task 6: `AvatarUpload` component — `src/features/users/components/AvatarUpload.tsx`
 
-Renders the user's current avatar (or a placeholder), a button to upload a new image, and a button to remove it.
+Renders current avatar (or placeholder), upload button, remove button.
 
 **Files:**
 - Create: `src/features/users/components/AvatarUpload.tsx`
@@ -358,7 +358,7 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
 
 ## Task 7: `ProfileForm` component — `src/features/users/components/ProfileForm.tsx`
 
-Form to edit username, email, bio, birthdate, and gender. Pre-populated from the current profile.
+Form: edit username, email, bio, birthdate, gender. Pre-populated from current profile.
 
 **Files:**
 - Create: `src/features/users/components/ProfileForm.tsx`
@@ -550,7 +550,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
 **Files:**
 - Modify: `src/routes/settings.tsx`
 
-**Step 1: Replace the stub with the real page**
+**Step 1: Replace stub with real page**
 
 ```tsx
 import { createFileRoute, redirect } from '@tanstack/react-router'
@@ -620,14 +620,14 @@ function SettingsPage() {
 
 ## Task 9: Tests — `src/tests/users.test.ts`
 
-Tests for `useCurrentUser`, `useUpdateProfile`, `useUploadAvatar`, `useDeleteAvatar` via mock fetch. Uses `@testing-library/react` with a minimal Query wrapper.
+Tests for `useCurrentUser`, `useUpdateProfile`, `useUploadAvatar`, `useDeleteAvatar` via mock fetch. Uses `@testing-library/react` with minimal Query wrapper.
 
 **Files:**
 - Create: `src/tests/users.test.ts`
 
-**Step 1: Check what testing utilities already exist**
+**Step 1: Check existing testing utilities**
 
-Look at `src/tests/auth.test.ts` for the `mockResponse` pattern already used. Replicate it.
+Look at `src/tests/auth.test.ts` for `mockResponse` pattern. Replicate it.
 
 **Step 2: Create the test file**
 
@@ -750,7 +750,7 @@ bun run test src/tests/users.test.ts
 
 Expected: 5 tests passing.
 
-**Step 4: Run the full test suite**
+**Step 4: Run full test suite**
 
 ```bash
 bun run test
@@ -763,9 +763,9 @@ Expected: all tests passing (14 existing + 5 new = 19 total).
 ## Task 10: Update docs
 
 **Files:**
-- Modify: `docs/plans/2026-04-07-frontend-design.md` — mark Phase 3 as complete in the implementation order table.
+- Modify: `docs/plans/2026-04-07-frontend-design.md` — mark Phase 3 complete in implementation order table.
 
-Update the table row:
+Update table row:
 ```
 | 3 | Settings (perfil do usuário, avatar) | ✅ Usuário editável para testes |
 ```

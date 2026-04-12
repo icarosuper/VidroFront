@@ -1,6 +1,6 @@
 # Architecture
 
-Leia este doc antes de criar rotas, features novas ou mudanças transversais (api-client, tipos compartilhados, providers no root).
+Leia doc antes criar rotas, features novas ou mudanças transversais (api-client, tipos compartilhados, providers no root).
 
 ## Stack
 
@@ -54,19 +54,19 @@ src/
 
 | Camada | Papel | Importa de |
 |---|---|---|
-| `routes/*` | File-based routing, loaders, `beforeLoad` (auth guard), composição de componentes de feature | `features/*`, `shared/*`, `components/*` |
-| `features/*/api.ts` | Funções tipadas que chamam `apiClient`. Nunca chama `fetch` direto (exceto uploads presigned) | `shared/lib/api-client`, `./types` |
+| `routes/*` | File-based routing, loaders, `beforeLoad` (auth guard), composição componentes feature | `features/*`, `shared/*`, `components/*` |
+| `features/*/api.ts` | Funções tipadas → `apiClient`. Nunca `fetch` direto (exceto uploads presigned) | `shared/lib/api-client`, `./types` |
 | `features/*/hooks.ts(x)` | Hooks TanStack Query (`useQuery`/`useMutation`/`useInfiniteQuery`) + invalidações | `./api`, `shared/lib/toast-error` |
-| `features/*/server.ts` | Server functions (`createServerFn`) para SSR ou operações que precisam de httpOnly cookie | `@tanstack/react-start`, `./types` |
+| `features/*/server.ts` | Server functions (`createServerFn`) p/ SSR ou ops que precisam httpOnly cookie | `@tanstack/react-start`, `./types` |
 | `features/*/components/*` | UI específica da feature | Qualquer camada abaixo |
-| `shared/lib/api-client.ts` | Único ponto de entrada HTTP: injeta token, unwrappa `{ data: T }`, faz retry em 401 | `shared/types`, `token-store` |
+| `shared/lib/api-client.ts` | Único ponto HTTP: injeta token, unwrappa `{ data: T }`, retry em 401 | `shared/types`, `token-store` |
 
 ## API client rule
 
-**Nenhuma feature chama `fetch` diretamente.** Todo HTTP passa por `apiClient` (`src/shared/lib/api-client.ts`). Exceções permitidas:
+**Nenhuma feature chama `fetch` diretamente.** Todo HTTP passa por `apiClient` (`src/shared/lib/api-client.ts`). Exceções:
 
-- **Uploads via presigned URL** (MinIO/S3): `fetch` PUT direto na URL — a credencial está na própria URL, não mande `Authorization`.
-- **Server functions** (`features/*/server.ts`): rodam no servidor, não têm acesso ao `tokenStore`; fazem `fetch` direto com o token recebido como argumento.
+- **Uploads via presigned URL** (MinIO/S3): `fetch` PUT direto na URL — credencial na própria URL, não mande `Authorization`.
+- **Server functions** (`features/*/server.ts`): rodam no servidor, sem acesso ao `tokenStore`; `fetch` direto com token como argumento.
 
 Padrão:
 
@@ -89,21 +89,21 @@ export function useVideo(videoId: string) {
 
 - Adiciona `Authorization: Bearer <token>` automaticamente quando há token no `tokenStore`
 - Serializa body JSON; trata `204 No Content`
-- Em **401**, chama `renewTokenCallback` (configurada no `__root.tsx`), seta o novo token e faz retry **uma vez**. Se o retry falhar, limpa o token e lança `ApiClientError`
-- Em erro, lança `ApiClientError { code, message, status }` — sempre use `toastApiError` para exibir
-- Desserializa o envelope `{ data: T }` e retorna `T` diretamente
+- Em **401**: chama `renewTokenCallback` (configurada no `__root.tsx`), seta novo token, retry **uma vez**. Se retry falhar, limpa token e lança `ApiClientError`
+- Em erro, lança `ApiClientError { code, message, status }` — sempre use `toastApiError`
+- Desserializa envelope `{ data: T }`, retorna `T`
 
 ## Estratégia de renderização
 
 | Rota | Estratégia | Notas |
 |---|---|---|
-| `/` | SSR | Loader dá prefetch de trending |
+| `/` | SSR | Loader prefetch trending |
 | `/watch/$videoId` | SSR | Loader usa `fetchVideoSsr` com `accessToken` do contexto |
 | `/search` | SSR | |
-| `/$username`, `/$username/$channel` | SSR | (ISR no futuro) |
-| `/upload`, `/dashboard`, `/settings` | Client-only | `beforeLoad` redireciona para `/` se não autenticado |
+| `/$username`, `/$username/$channel` | SSR | (ISR futuro) |
+| `/upload`, `/dashboard`, `/settings` | Client-only | `beforeLoad` redireciona `/` se não autenticado |
 
-O `__root.tsx` resolve o token inicial no servidor via `getInitialToken()` e passa pelo router context, então rotas SSR autenticadas não têm waterfall.
+`__root.tsx` resolve token inicial no servidor via `getInitialToken()`, passa pelo router context → rotas SSR autenticadas sem waterfall.
 
 ## Formatos de resposta da API
 
@@ -135,7 +135,7 @@ Formato: `['resource-type', id, ...sub]`. Exemplos:
 ['channels', channelId, 'videos']
 ```
 
-Um módulo pode exportar um objeto `*Keys` para centralizar (ver `features/users/hooks.ts`: `userKeys.me()`).
+Módulo pode exportar `*Keys` p/ centralizar (ver `features/users/hooks.ts`: `userKeys.me()`).
 
 ## Environment
 
@@ -143,4 +143,4 @@ Um módulo pode exportar um objeto `*Keys` para centralizar (ver `features/users
 VITE_API_URL=http://localhost:5000   # .NET backend
 ```
 
-Exposta ao cliente via `import.meta.env.VITE_API_URL`. No servidor (`server.ts`) é lida via `process.env.VITE_API_URL`.
+Exposta ao cliente via `import.meta.env.VITE_API_URL`. No servidor (`server.ts`): `process.env.VITE_API_URL`.

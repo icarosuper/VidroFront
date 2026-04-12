@@ -1,14 +1,14 @@
 # Workflow
 
-Leia este doc para entender como o projeto é construído fase por fase, a estratégia de branches e o ciclo de trabalho após cada implementação.
+Leia doc: entender projeto fase por fase, estratégia branches, ciclo pós-implementação.
 
 ## Escopo de edição
 
-Você pode **ler** outros projetos no repositório (ex: `../Api/`) para entender contratos, tipos e endpoints. Mas **nunca edite** nada fora de `/home/icaro/Projetos/Vidro/FrontNovo/`. Se um endpoint da API estiver faltando dados necessários para o frontend, **informe o usuário** em vez de alterar o backend.
+Pode **ler** outros projetos (ex: `../Api/`) p/ entender contratos, tipos, endpoints. **Nunca edite** fora de `/home/icaro/Projetos/Vidro/FrontNovo/`. API faltar dados → **informe usuário**, não altere backend.
 
 ## Fases de implementação
 
-O projeto é construído fase por fase. Planos detalhados em `docs/plans/`:
+Planos detalhados em `docs/plans/`:
 
 1. ✅ **Scaffold** — TanStack Start + shadcn + estrutura + api-client
 2. ✅ **Auth** — signIn, signUp, signOut, renovação de token, proteção de rota
@@ -20,35 +20,35 @@ O projeto é construído fase por fase. Planos detalhados em `docs/plans/`:
 8. ✅ **Comments** — list, add, reply, edit, delete, reactions
 9. **Playlists**
 
-**Cada fase precisa ser entregue funcional.** Nada meio feito entre fases.
+**Cada fase: entrega funcional.** Nada meio feito entre fases.
 
 ## Branching
 
-- **Feature branches** — uma branch por fase ou grupo de features (ex: `feature/auth`, `feature/channels`), saindo de `master` e voltando via PR.
+- **Feature branches** — 1 branch por fase/grupo (ex: `feature/auth`, `feature/channels`), sai de `master`, volta via PR.
 - **`master`** — sempre deployável.
 
 ## Working style — após cada passo
 
-1. **Rodar testes relevantes.** `bun run test` após terminar uma feature. Corrigir falhas antes de prosseguir.
-2. **Atualizar docs relevantes.** Reflita qualquer mudança de rota, API, ou design em:
-   - `docs/plans/` — marcar tarefas como ✅
-   - `docs/claude/features-index.md` — ao adicionar/remover endpoints, hooks ou componentes
-   - `docs/claude/architecture.md` — ao mudar camadas, api-client, estratégia de renderização
-   - `docs/claude/auth.md` — ao mexer em qualquer coisa de auth
-   - `docs/claude/conventions.md` — só se uma convenção mudar (raro)
-3. **Sugerir commit message em português.** O usuário revisa e commita manualmente.
-4. **Mostrar próximos passos possíveis.** Lista breve para o usuário escolher o que implementar.
+1. **Rodar testes.** `bun run test` pós-feature. Corrigir falhas antes de prosseguir.
+2. **Atualizar docs.** Reflita mudanças em:
+   - `docs/plans/` — marcar ✅
+   - `docs/claude/features-index.md` — ao add/remover endpoints, hooks, componentes
+   - `docs/claude/architecture.md` — ao mudar camadas, api-client, renderização
+   - `docs/claude/auth.md` — qualquer mudança de auth
+   - `docs/claude/conventions.md` — só se convenção mudar (raro)
+3. **Sugerir commit message em português.** Usuário revisa e commita.
+4. **Mostrar próximos passos.** Lista breve p/ usuário escolher.
 
 ## Git commits
 
-**NUNCA commite código sem pedido explícito do usuário.** Fluxo:
+**NUNCA commite sem pedido explícito.** Fluxo:
 
-1. Implementar as mudanças
-2. Rodar testes para verificar que passam
-3. Mostrar ao usuário as mudanças e sugerir commit message (em português)
-4. Esperar aprovação ou pedido explícito
+1. Implementar mudanças
+2. Rodar testes
+3. Mostrar mudanças + sugerir commit message (português)
+4. Esperar aprovação
 
-O usuário decide quando e como commitar.
+Usuário decide quando/como commitar.
 
 ## Comandos frequentes
 

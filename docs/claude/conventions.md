@@ -1,6 +1,6 @@
 # Conventions
 
-Leia este doc antes de escrever componentes, hooks ou funções de API. Ele define os padrões não-óbvios que devem ser seguidos em todo o código.
+Read doc before write component, hook, API fn. Define non-obvious patterns for all code.
 
 ## Idioma
 
@@ -12,7 +12,7 @@ Leia este doc antes de escrever componentes, hooks ou funções de API. Ele defi
 
 ### Variáveis nomeadas > expressões inline
 
-Sempre atribua resultado de checks/expressões a uma variável com nome descritivo antes de usar em condição.
+Always assign check/expression result to named var before use in condition.
 
 ```ts
 // ✅
@@ -25,15 +25,15 @@ if (users.some((u) => u.email === email)) return { error: 'Email already in use'
 
 ### Extraia lógica complexa em funções
 
-Se um bloco precisa de comentário para explicar o que faz, deve ser uma função com nome que explique.
+Block need comment to explain → make named function instead.
 
 ### Nomes expressam intenção
 
-O nome responde "o que", não "como". Evite abreviações, nomes de letra única (exceto loops) e nomes genéricos (`result`, `data`, `temp`).
+Name answer "what", not "how". No abbreviations, no single-letter (except loops), no generic names (`result`, `data`, `temp`).
 
 ### Ternários sempre em três linhas
 
-Condição na primeira, `?` na segunda, `:` na terceira. Nunca em uma linha.
+Condition first line, `?` second, `:` third. Never one line.
 
 ```ts
 // ✅
@@ -47,7 +47,7 @@ const label = isAuthenticated ? 'Sign out' : 'Sign in'
 
 ## Feature module layout
 
-Toda feature em `src/features/<name>/` segue:
+All feature in `src/features/<name>/` follow:
 
 ```
 features/<name>/
@@ -60,11 +60,11 @@ features/<name>/
 
 ### Regras
 
-- **Um `api.ts` nunca chama `fetch` diretamente** — sempre via `apiClient`, exceto uploads presigned (veja [architecture.md](architecture.md)).
-- **Hooks só consomem `api.ts`**, não importam `apiClient` nem `fetch`.
-- **Funções de api aceitam `signal?: AbortSignal`** e repassam. Isso permite cancelamento automático pelo React Query.
-- **Request shapes** usam `id` numérico para enums (ex: `visibility: number`). **Response shapes** recebem `EnumValue`.
-- **`*Summary`** é o tipo enxuto para listagens; **`Channel`/`Video`/etc.** é o detalhe completo.
+- **`api.ts` never call `fetch` directly** — always via `apiClient`, except presigned uploads (see [architecture.md](architecture.md)).
+- **Hooks only consume `api.ts`**, no import `apiClient` or `fetch`.
+- **API fns accept `signal?: AbortSignal`** and forward it. Enables React Query auto-cancel.
+- **Request shapes** use numeric `id` for enums (e.g. `visibility: number`). **Response shapes** receive `EnumValue`.
+- **`*Summary`** = lean type for lists; **`Channel`/`Video`/etc.** = full detail.
 
 ### Exemplo: nova endpoint
 
@@ -85,7 +85,7 @@ export function useVideo(videoId: string) {
 
 ### Mutations + invalidação
 
-Mutations invalidam as query keys afetadas **no `onSuccess`** e usam `toastApiError` no `onError`.
+Mutations invalidate affected query keys **in `onSuccess`**, use `toastApiError` in `onError`.
 
 ```ts
 export function useUpdateVideo(videoId: string) {
@@ -102,7 +102,7 @@ export function useUpdateVideo(videoId: string) {
 
 ## Query keys
 
-Formato: `['resource-type', id, ...sub]`.
+Format: `['resource-type', id, ...sub]`.
 
 ```ts
 ['videos', videoId]
@@ -113,14 +113,14 @@ Formato: `['resource-type', id, ...sub]`.
 ['channels', channelId, 'videos']
 ```
 
-Para keys usadas em múltiplos lugares, exporte um objeto `*Keys` (ex: `userKeys.me()` em `features/users/hooks.ts`).
+Keys used in multiple places → export `*Keys` object (e.g. `userKeys.me()` in `features/users/hooks.ts`).
 
 ## Error handling
 
-- **Erros de API** sempre viram `ApiClientError { code, message, status }`.
-- **Toasts:** use `toastApiError(error)` de `shared/lib/toast-error.ts`. Ele traduz `code` para mensagem user-facing via `error-messages.ts`.
-- **Não use `try/catch` só pra toast** — passe `onError: toastApiError` no `useMutation`.
-- **Códigos conhecidos** estão em `API_ERROR_CODES` (`shared/types.ts`). Se você reage a um código específico, importe dessa constante (não use string literal).
+- **API errors** always become `ApiClientError { code, message, status }`.
+- **Toasts:** use `toastApiError(error)` from `shared/lib/toast-error.ts`. Translates `code` to user-facing message via `error-messages.ts`.
+- **No `try/catch` just for toast** — pass `onError: toastApiError` in `useMutation`.
+- **Known codes** in `API_ERROR_CODES` (`shared/types.ts`). React to specific code → import from constant, not string literal.
 
 ## Naming
 
@@ -137,22 +137,22 @@ Para keys usadas em múltiplos lugares, exporte um objeto `*Keys` (ex: `userKeys
 
 ## Componentes
 
-- **shadcn/ui** em `src/components/ui/`. Customize por extensão, não editando os wrappers base.
-- **Components de feature** ficam em `src/features/<name>/components/`. Componentes compartilhados entre features vão para `src/components/`.
-- **Forms:** composição direta com componentes shadcn + `useState` + validação inline. Não introduza `react-hook-form` ou libs de form sem discussão.
-- **Sem props drilling além de 2 níveis** — use context (ex: `AuthModalProvider`) quando for necessário.
+- **shadcn/ui** in `src/components/ui/`. Customize by extension, not editing base wrappers.
+- **Feature components** in `src/features/<name>/components/`. Shared across features → `src/components/`.
+- **Forms:** direct composition with shadcn components + `useState` + inline validation. No `react-hook-form` or form libs without discussion.
+- **No props drilling beyond 2 levels** — use context (e.g. `AuthModalProvider`) when needed.
 
 ## Imports
 
-Usa alias `#/` para `src/`:
+Use alias `#/` for `src/`:
 
 ```ts
 import { apiClient } from '#/shared/lib/api-client'
 import { toastApiError } from '#/shared/lib/toast-error'
 ```
 
-Ordem (Biome organiza automaticamente):
-1. Libs externas
+Order (Biome auto-organizes):
+1. External libs
 2. `#/shared/*`
 3. `#/features/*`, `#/components/*`
-4. Relativos (`./`)
+4. Relative (`./`)

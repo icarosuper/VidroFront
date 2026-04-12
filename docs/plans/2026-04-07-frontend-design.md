@@ -8,7 +8,7 @@
 
 ## Contexto
 
-Reescrita do frontend POC (Svelte SPA em `Front/`) com stack production-ready. A API .NET já está completa e documentada. O novo front será construído incrementalmente, fase por fase.
+Reescrita frontend POC (Svelte SPA em `Front/`) com stack production-ready. API .NET completa + documentada. Novo front construído incrementalmente, fase por fase.
 
 ---
 
@@ -61,15 +61,15 @@ FrontNovo/
 | Rota | Estratégia | Motivo |
 |------|-----------|--------|
 | `/` | SSR | Feed personalizado se logado, trending se não |
-| `/watch/:videoId` | SSR | Metatags OG completas — crítico para SEO e compartilhamento |
+| `/watch/:videoId` | SSR | Metatags OG — crítico SEO + compartilhamento |
 | `/search` | SSR | Query param indexável (`?q=`) |
-| `/:username` | SSR + ISR | Página pública, dados mudam pouco |
+| `/:username` | SSR + ISR | Pág. pública, dados mudam pouco |
 | `/:username/:channelHandle` | SSR + ISR | Idem |
 | `/upload` | Client-only | Auth obrigatória, sem SEO |
 | `/dashboard` | Client-only | Idem |
 | `/settings` | Client-only | Idem |
 
-Proteção de rotas autenticadas via `beforeLoad` no root das rotas privadas — redireciona para `/` com modal de login se não houver sessão.
+Proteção rotas autenticadas via `beforeLoad` no root rotas privadas — redireciona `/` c/ modal login se sem sessão.
 
 ---
 
@@ -92,12 +92,12 @@ client:
 2. Chama server function `renewToken`
 3. Server function lê cookie httpOnly → POST `/v1/auth/renew-token` → novos tokens
 4. Atualiza cookie → retorna novo accessToken
-5. api-client repete a request original
-6. Se falhar → limpa sessão → redireciona para login
+5. api-client repete request original
+6. Se falhar → limpa sessão → redireciona login
 
-**SSR:** rotas SSR leem o cookie httpOnly via server function para obter accessToken válido antes dos fetches — sem waterfall no cliente.
+**SSR:** rotas SSR leem cookie httpOnly via server function → accessToken válido antes fetches — sem waterfall no cliente.
 
-**Segurança:** o refreshToken nunca toca o JavaScript do browser. Fica exclusivamente no cookie httpOnly e no servidor — imune a XSS.
+**Segurança:** refreshToken nunca toca JS do browser. Exclusivo no cookie httpOnly + servidor — imune a XSS.
 
 ---
 
@@ -121,7 +121,7 @@ type EnumValue = { id: number; value: string }
 type CursorPage<K extends string, T> = { [key in K]: T[] } & { nextCursor: string | null }
 ```
 
-Cada `features/*/api.ts` importa o client e exporta funções tipadas. Nenhuma feature faz `fetch` diretamente. TanStack Query fica nos hooks, consumindo as funções do `api.ts`. Query keys por convenção: `['videos', videoId]`, `['channels', handle]`, etc.
+Cada `features/*/api.ts` importa client, exporta funções tipadas. Nenhuma feature faz `fetch` direto. TanStack Query nos hooks, consome funções do `api.ts`. Query keys: `['videos', videoId]`, `['channels', handle]`, etc.
 
 ---
 
@@ -139,15 +139,15 @@ Cada `features/*/api.ts` importa o client e exporta funções tipadas. Nenhuma f
 | 8 | Comentários (listagem, add, reply, edit, delete, reações) | Engajamento |
 | 9 | Playlists (criação, gerenciamento, add/remove vídeos) | Feature completa |
 
-Cada fase termina com o produto funcionando — nada pela metade.
+Cada fase termina com produto funcionando — nada pela metade.
 
 ---
 
 ## Notas de Implementação
 
-- **URLs amigáveis:** canais são identificados por `username + channelHandle`. Endpoints públicos usam `/users/{username}/channels/{handle}`, endpoints autenticados usam `/channels/{handle}`
-- **Upload:** flow de 2 etapas via presigned PUT — arquivo vai direto ao MinIO, nunca passa pela API
-- **EnumValue:** toda enum na resposta vem como `{ id: number; value: string }`. No request, enviar o inteiro
-- **Paginação:** cursor é `DateTimeOffset` ISO 8601. Playlists usam estilo ligeiramente diferente (`PagedResult<T>` com `items` + `nextCursor`)
-- **Thumbnails/URLs:** presigned MinIO (expiram) — não cachear por longo prazo
-- **Comentários deletados:** `isDeleted: true`, `content: null` — manter na UI para preservar threads
+- **URLs amigáveis:** canais por `username + channelHandle`. Endpoints públicos `/users/{username}/channels/{handle}`, autenticados `/channels/{handle}`
+- **Upload:** 2 etapas via presigned PUT — arquivo direto ao MinIO, nunca passa pela API
+- **EnumValue:** enum na resposta = `{ id: number; value: string }`. No request, enviar inteiro
+- **Paginação:** cursor = `DateTimeOffset` ISO 8601. Playlists usam `PagedResult<T>` com `items` + `nextCursor`
+- **Thumbnails/URLs:** presigned MinIO (expiram) — não cachear longo prazo
+- **Comentários deletados:** `isDeleted: true`, `content: null` — manter na UI p/ preservar threads

@@ -1,14 +1,16 @@
+I'll construct the fixed file by ensuring all code blocks match the ORIGINAL exactly. Let me output the corrected compressed file now:
+
 # Fase 1 — Scaffold Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Criar o projeto TanStack Start completo em `FrontNovo/` com estrutura de pastas, API client tipado e rotas placeholder prontos para começar a Fase 2 (Auth).
+**Goal:** Criar projeto TanStack Start completo em `FrontNovo/` — pastas, API client tipado, rotas placeholder prontos p/ Fase 2 (Auth).
 
-**Architecture:** TanStack Start (SSR seletivo) com TanStack Query para data fetching, shadcn/ui + Tailwind v4 para UI. Fetch wrapper central em `src/shared/lib/api-client.ts` que todas as features usam — nenhuma feature faz `fetch` diretamente. Estrutura vertical-slice em `src/features/`.
+**Architecture:** TanStack Start (SSR seletivo) + TanStack Query, shadcn/ui + Tailwind v4. Fetch wrapper central em `src/shared/lib/api-client.ts` — nenhuma feature faz `fetch` direto. Estrutura vertical-slice em `src/features/`.
 
 **Tech Stack:** TanStack Start, TanStack Query, shadcn/ui, Tailwind CSS v4, TypeScript, bun, Vitest
 
-> **Nota:** O CLI do TanStack gera os arquivos em `src/` (não `app/` como descrito no design doc). Use `src/` em todos os caminhos abaixo.
+> **Nota:** CLI TanStack gera arquivos em `src/` (não `app/`). Usar `src/` em todos caminhos abaixo.
 
 ---
 
@@ -17,7 +19,7 @@
 **Files:**
 - Create: `FrontNovo/` (projeto completo)
 
-**Step 1: Rodar o CLI do TanStack Start**
+**Step 1: Rodar CLI TanStack Start**
 
 No diretório `/home/icaro/Projetos/Vidro/`:
 
@@ -29,16 +31,16 @@ bunx @tanstack/cli create FrontNovo \
   --no-git
 ```
 
-O CLI vai perguntar sobre toolchain — escolha **biome** (linter + formatter em um binário, sem configuração extra).
+CLI pergunta sobre toolchain — escolher **biome** (linter + formatter, sem config extra).
 
-**Step 2: Verificar que o projeto sobe**
+**Step 2: Verificar projeto sobe**
 
 ```bash
 cd FrontNovo
 bun run dev
 ```
 
-Esperado: servidor rodando em `http://localhost:3000` sem erros. Pode fechar depois de verificar.
+Esperado: servidor em `http://localhost:3000` sem erros. Fechar após verificar.
 
 **Step 3: Commit inicial**
 
@@ -52,7 +54,7 @@ git commit -m "chore: scaffold TanStack Start com shadcn e TanStack Query"
 
 ## ✅ Task 2: Limpar boilerplate
 
-O CLI gera páginas de exemplo, componentes de demo e estilos temáticos (cores `--sea-ink`, `--lagoon`, etc.) que não queremos. Substituímos por uma base neutra.
+CLI gera páginas de exemplo, componentes demo e estilos temáticos (cores `--sea-ink`, `--lagoon`, etc.) — não queremos. Substituir por base neutra.
 
 **Files:**
 - Delete: `src/routes/about.tsx`
@@ -70,7 +72,7 @@ rm src/routes/about.tsx
 
 **Step 2: Resetar `src/routes/index.tsx`**
 
-Substituir todo o conteúdo por:
+Substituir todo conteúdo por:
 
 ```tsx
 import { createFileRoute } from '@tanstack/react-router'
@@ -114,7 +116,7 @@ rm src/components/Footer.tsx
 
 **Step 5: Resetar `src/styles.css`**
 
-Substituir todo o conteúdo por (mantém apenas o necessário para shadcn + Tailwind v4):
+Substituir todo conteúdo (manter só necessário p/ shadcn + Tailwind v4):
 
 ```css
 @import 'tailwindcss';
@@ -212,7 +214,7 @@ Substituir todo o conteúdo por (mantém apenas o necessário para shadcn + Tail
 
 **Step 6: Atualizar `src/routes/__root.tsx`**
 
-Remover referências ao Footer e ao tema oceânico. Manter `Header`, providers e devtools:
+Remover refs ao Footer e tema oceânico. Manter `Header`, providers, devtools:
 
 ```tsx
 import {
@@ -267,7 +269,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 }
 ```
 
-**Step 7: Verificar que ainda funciona**
+**Step 7: Verificar funciona**
 
 ```bash
 bun run dev
@@ -313,7 +315,7 @@ git commit -m "chore: limpar boilerplate do scaffold"
 - Create: `src/features/users/types.ts`
 - Modify: `src/shared/` (já existe — adicionar subpastas)
 
-**Step 1: Criar estrutura com um único comando**
+**Step 1: Criar estrutura em único comando**
 
 ```bash
 mkdir -p \
@@ -434,9 +436,9 @@ git commit -m "feat: definir tipos base compartilhados (ApiSuccess, ApiError, En
 
 ## ✅ Task 5: Implementar o API client
 
-O client central faz `fetch` para a API, injeta o access token, intercepta 401 para renovar o token automaticamente e mapeia erros para tipos TypeScript.
+Client central faz `fetch` p/ API, injeta access token, intercepta 401 p/ renovar token automaticamente, mapeia erros p/ tipos TypeScript.
 
-O access token fica em memória (módulo singleton). O refresh via server function será conectado na Fase 2 — por ora o client recebe um callback `onRenewToken` que pode ser null.
+Access token fica em memória (módulo singleton). Refresh via server function conectado na Fase 2 — por ora client recebe callback `onRenewToken` que pode ser null.
 
 **Files:**
 - Create: `src/shared/lib/api-client.ts`
@@ -461,7 +463,7 @@ export const tokenStore = {
 }
 ```
 
-**Step 2: Escrever os testes antes de implementar o client**
+**Step 2: Escrever testes antes de implementar o client**
 
 Criar `src/tests/api-client.test.ts`:
 
@@ -588,7 +590,7 @@ describe('apiClient', () => {
 })
 ```
 
-**Step 3: Rodar os testes para confirmar que falham**
+**Step 3: Rodar testes p/ confirmar que falham**
 
 ```bash
 bun run test src/tests/api-client.test.ts
@@ -702,13 +704,13 @@ Criar `FrontNovo/.env.example`:
 VITE_API_URL=http://localhost:5000
 ```
 
-**Step 6: Rodar os testes**
+**Step 6: Rodar testes**
 
 ```bash
 bun run test src/tests/api-client.test.ts
 ```
 
-Esperado: todos os 7 testes passando.
+Esperado: todos 7 testes passando.
 
 **Step 7: Commit**
 
@@ -721,7 +723,7 @@ git commit -m "feat: implementar API client com injeção de token e retry em 40
 
 ## ✅ Task 6: Criar rotas placeholder
 
-Criar todas as rotas definidas no design para que o router as reconheça. Cada rota tem um componente mínimo com o nome da página.
+Criar todas rotas do design p/ router reconhecer. Cada rota tem componente mínimo com nome da página.
 
 **Files:**
 - Create: `src/routes/watch.$videoId.tsx`
@@ -828,13 +830,13 @@ function DashboardPage() {
 }
 ```
 
-**Step 2: Verificar que todas as rotas funcionam**
+**Step 2: Verificar rotas funcionam**
 
 ```bash
 bun run dev
 ```
 
-Navegar para cada rota no browser:
+Navegar p/ cada rota no browser:
 - `http://localhost:3000/` — "Vidro"
 - `http://localhost:3000/watch/test-id` — "Watch: test-id"
 - `http://localhost:3000/search` — "Search"
@@ -857,9 +859,9 @@ git commit -m "feat: criar rotas placeholder para todas as páginas do design"
 
 - [x] `bun run dev` sobe sem erros
 - [x] `bun run test` passa (7 testes do api-client)
-- [x] Todas as 8 rotas navegáveis no browser
-- [x] Estrutura de pastas `src/features/` e `src/shared/` criada
-- [x] `src/shared/types.ts` com todos os tipos base
+- [x] Todas 8 rotas navegáveis no browser
+- [x] Estrutura `src/features/` e `src/shared/` criada
+- [x] `src/shared/types.ts` com todos tipos base
 - [x] `src/shared/lib/api-client.ts` com token injection e retry 401
 - [x] `.env.example` commitado, `.env` no `.gitignore`
-- [x] 5 commits limpos no histórico do git
+- [x] 5 commits limpos no histórico git

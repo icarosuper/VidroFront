@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Implementar criação, edição, exclusão e gerenciamento de vídeos em playlists. Playlists podem ter escopo de usuário (`User`) ou canal (`Channel`) e visibilidade pública ou privada.
+Impl criação/edição/exclusão/gerenciamento vídeos em playlists. Playlists: escopo `User` ou `Channel`, visibilidade pública/privada.
 
 ---
 
@@ -13,13 +13,13 @@ Implementar criação, edição, exclusão e gerenciamento de vídeos em playlis
 | Método | Path | Auth | Descrição |
 |---|---|---|---|
 | `POST` | `/v1/playlists` | required | Criar playlist |
-| `GET` | `/v1/playlists/{playlistId}` | optional | Buscar playlist com items |
-| `PUT` | `/v1/playlists/{playlistId}` | required | Editar nome/descrição/visibilidade |
+| `GET` | `/v1/playlists/{playlistId}` | optional | Buscar playlist + items |
+| `PUT` | `/v1/playlists/{playlistId}` | required | Editar nome/desc/visibilidade |
 | `DELETE` | `/v1/playlists/{playlistId}` | required | Deletar playlist |
-| `GET` | `/v1/users/{username}/channels/{handle}/playlists` | optional | Listar playlists de um canal (cursor) |
-| `GET` | `/v1/users/{username}/playlists` | optional | Listar playlists pessoais do usuário (cursor) |
-| `POST` | `/v1/playlists/{playlistId}/items` | required | Adicionar vídeo à playlist |
-| `DELETE` | `/v1/playlists/{playlistId}/items/{videoId}` | required | Remover vídeo da playlist |
+| `GET` | `/v1/users/{username}/channels/{handle}/playlists` | optional | Listar playlists canal (cursor) |
+| `GET` | `/v1/users/{username}/playlists` | optional | Listar playlists pessoais (cursor) |
+| `POST` | `/v1/playlists/{playlistId}/items` | required | Adicionar vídeo |
+| `DELETE` | `/v1/playlists/{playlistId}/items/{videoId}` | required | Remover vídeo |
 
 ### Shapes relevantes
 
@@ -60,11 +60,11 @@ Implementar criação, edição, exclusão e gerenciamento de vídeos em playlis
 { videoId: string }
 ```
 
-### Regras de negócio (backend)
-- Playlist `Channel` só aceita vídeos do próprio canal.
-- Playlist privada retorna 404 para não-dono (tanto `GET` individual quanto nas listagens).
-- `listPlaylistsByUser` só retorna playlists com `scope === User`.
-- `listPlaylistsByChannel` só retorna playlists com `scope === Channel`.
+### Regras negócio (backend)
+- Playlist `Channel`: só aceita vídeos do próprio canal.
+- Playlist privada: retorna 404 p/ não-dono (GET individual + listagens).
+- `listPlaylistsByUser`: só retorna `scope === User`.
+- `listPlaylistsByChannel`: só retorna `scope === Channel`.
 
 ---
 
@@ -77,23 +77,23 @@ Implementar criação, edição, exclusão e gerenciamento de vídeos em playlis
 | `types.ts` | `PlaylistSummary`, `Playlist`, `PlaylistItem`, `PlaylistsPage`, `CreatePlaylistRequest`, `CreatePlaylistResponse`, `UpdatePlaylistRequest` |
 | `api.ts` | `createPlaylist`, `getPlaylist`, `updatePlaylist`, `deletePlaylist`, `listChannelPlaylists`, `listUserPlaylists`, `addVideoToPlaylist`, `removeVideoFromPlaylist` |
 | `hooks.ts` | `usePlaylist`, `useChannelPlaylists`, `useUserPlaylists`, `useCreatePlaylist`, `useUpdatePlaylist`, `useDeletePlaylist`, `useAddVideoToPlaylist`, `useRemoveVideoFromPlaylist`, `playlistKeys` |
-| `components/CreatePlaylistForm.tsx` | Form de criação (nome, descrição, visibilidade, escopo + channelId opcional) |
-| `components/EditPlaylistForm.tsx` | Form de edição (nome, descrição, visibilidade) |
-| `components/PlaylistCard.tsx` | Card resumido: nome, videoCount, visibilidade badge |
-| `components/PlaylistItemList.tsx` | Lista de vídeos dentro de uma playlist com botão de remover (owner-only) |
+| `components/CreatePlaylistForm.tsx` | Form criação (nome, desc, visibilidade, escopo + channelId opcional) |
+| `components/EditPlaylistForm.tsx` | Form edição (nome, desc, visibilidade) |
+| `components/PlaylistCard.tsx` | Card: nome, videoCount, badge visibilidade |
+| `components/PlaylistItemList.tsx` | Lista vídeos + botão remover (owner-only) |
 
 ### Rotas novas
 
 | Rota | Arquivo | Estratégia | Auth | Descrição |
 |---|---|---|---|---|
-| `/playlists/$playlistId` | `routes/playlists.$playlistId.tsx` | SSR (público, mas owner vê itens privados) | optional | Página de detalhe da playlist |
+| `/playlists/$playlistId` | `routes/playlists.$playlistId.tsx` | SSR (público, owner vê itens privados) | optional | Detalhe playlist |
 
 ### Rotas editadas
 
 | Rota | Arquivo | Mudança |
 |---|---|---|
-| `/$username/$channel` | `routes/$username.$channel.tsx` | Adicionar aba/seção "Playlists" listando playlists do canal |
-| `/dashboard` | `routes/dashboard.tsx` | Adicionar seção para gerenciar playlists pessoais |
+| `/$username/$channel` | `routes/$username.$channel.tsx` | Add aba/seção "Playlists" do canal |
+| `/dashboard` | `routes/dashboard.tsx` | Add seção gerenciar playlists pessoais |
 
 ---
 
@@ -107,9 +107,9 @@ Implementar criação, edição, exclusão e gerenciamento de vídeos em playlis
   - ✅ `CreatePlaylistForm.tsx`
   - ✅ `EditPlaylistForm.tsx`
   - ✅ `PlaylistItemList.tsx`
-- ✅ **5. Rota `/playlists/$playlistId`** — página de detalhe SSR
-- ✅ **6. Canal page** — adicionar seção de playlists em `/$username/$channel`
-- ✅ **7. Dashboard** — adicionar gestão de playlists pessoais
+- ✅ **5. Rota `/playlists/$playlistId`** — detalhe SSR
+- ✅ **6. Canal page** — add seção playlists em `/$username/$channel`
+- ✅ **7. Dashboard** — add gestão playlists pessoais
 - ✅ **8. Atualizar `docs/claude/features-index.md`**
 - ✅ **9. Rodar testes**
 
@@ -117,7 +117,7 @@ Implementar criação, edição, exclusão e gerenciamento de vídeos em playlis
 
 ## Notas
 
-- `PlaylistVisibility` e `PlaylistScope` já estão definidos em `src/shared/types.ts`.
-- Na rota de detalhe, carregar a playlist via loader SSR para SEO; hydration normal para ações de owner.
+- `PlaylistVisibility` e `PlaylistScope` já em `src/shared/types.ts`.
+- Rota detalhe: load playlist via loader SSR p/ SEO; hydration normal p/ ações owner.
 - `addVideoToPlaylist` invalida `playlistKeys.detail(playlistId)` após sucesso.
-- Playlist `Channel` só aparece na page do canal; playlist `User` aparece no dashboard e na page pública do usuário (quando o `userId` for exposto — confirmar se backend expõe `userId` em `UserProfile`).
+- Playlist `Channel`: aparece só na page do canal. Playlist `User`: aparece no dashboard + page pública do usuário (confirmar se backend expõe `userId` em `UserProfile`).
