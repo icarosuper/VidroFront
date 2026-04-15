@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Eye, Pencil, ThumbsDown, ThumbsUp } from 'lucide-react'
+import { Eye, ImagePlus, Pencil, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { Badge } from '#/components/ui/badge'
@@ -14,6 +14,7 @@ import {
 import { TimeAgo } from '#/components/TimeAgo'
 import { VideoVisibility } from '#/shared/types'
 import type { EnumValue } from '#/shared/types'
+import { useUploadThumbnail } from '../hooks'
 import { EditVideoForm } from './EditVideoForm'
 
 export type VideoCardVideo = {
@@ -57,7 +58,9 @@ export function VideoCard({ video, hideChannelInfo = false, isOwner = false }: V
   const [editOpen, setEditOpen] = useState(false)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const thumbnailInputRef = useRef<HTMLInputElement>(null)
   const hasExtraThumbnails = video.thumbnailUrls.length > 1
+  const uploadThumbnail = useUploadThumbnail(video.videoId)
 
   function startCycling() {
     if (!hasExtraThumbnails) return
@@ -93,12 +96,25 @@ export function VideoCard({ video, hideChannelInfo = false, isOwner = false }: V
     setEditOpen(true)
   }
 
+  function handleThumbnailClick(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    thumbnailInputRef.current?.click()
+  }
+
+  function handleThumbnailFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    uploadThumbnail.mutate(file)
+    e.target.value = ''
+  }
+
   return (
     <>
       <Link to="/watch/$videoId" params={{ videoId: video.videoId }} className="no-underline">
         <Card className="overflow-hidden transition-shadow hover:shadow-md border-0 shadow-none bg-transparent rounded-xl p-3 gap-0">
           <div
-            className="relative aspect-video w-full bg-muted rounded-xl overflow-hidden"
+            className="group relative aspect-video w-full bg-muted rounded-xl overflow-hidden"
             onMouseEnter={startCycling}
             onMouseLeave={stopCycling}
           >
@@ -134,11 +150,24 @@ export function VideoCard({ video, hideChannelInfo = false, isOwner = false }: V
               <Button
                 variant="secondary"
                 size="icon"
-                className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-2 right-2 h-7 w-7 opacity-50 group-hover:opacity-100 transition-opacity"
                 onClick={handleEditClick}
                 aria-label="Edit video"
               >
                 <Pencil className="h-3.5 w-3.5" />
+              </Button>
+            )}
+
+            {isOwner && (
+              <Button
+                variant="secondary"
+                size="icon"
+                className="absolute bottom-2 right-2 h-7 w-7 opacity-50 group-hover:opacity-100 transition-opacity"
+                onClick={handleThumbnailClick}
+                disabled={uploadThumbnail.isPending}
+                aria-label="Upload thumbnail"
+              >
+                <ImagePlus className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
@@ -151,17 +180,6 @@ export function VideoCard({ video, hideChannelInfo = false, isOwner = false }: V
                     <h3 className="line-clamp-2 text-sm font-bold leading-tight text-foreground flex-1">
                       {video.title}
                     </h3>
-                    {isOwner && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 shrink-0 -mr-1"
-                        onClick={handleEditClick}
-                        aria-label="Edit video"
-                      >
-                        <Pencil className="h-3 w-3" />
-                      </Button>
-                    )}
                   </div>
 
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -259,6 +277,16 @@ export function VideoCard({ video, hideChannelInfo = false, isOwner = false }: V
           </CardContent>
         </Card>
       </Link>
+
+      {isOwner && (
+        <input
+          ref={thumbnailInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleThumbnailFileChange}
+        />
+      )}
 
       {isOwner && video.visibility && (
         <Dialog open={editOpen} onOpenChange={setEditOpen}>

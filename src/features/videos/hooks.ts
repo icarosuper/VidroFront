@@ -172,8 +172,10 @@ export function useUploadThumbnail(videoId: string) {
 
   return useMutation({
     mutationFn: (file: File) => uploadThumbnail(videoId, file),
+    onError: toastApiError,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: videoKeys.detail(videoId) })
+      queryClient.invalidateQueries({ queryKey: ['videos', 'channel'] })
     },
   })
 }
