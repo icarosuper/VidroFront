@@ -64,7 +64,3 @@ src/
 VITE_API_URL=http://localhost:5000
 ```
 
-## Related Projects
-
-- [VidroApi](../Api) — .NET backend this frontend consumes
-- [VidroProcessor](../Processor) — Go worker that processes uploaded videos
