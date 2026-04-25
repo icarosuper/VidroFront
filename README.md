@@ -1,10 +1,8 @@
 # VidroFront
 
-**Vidro** — [VidroApi](../Api) · [VidroProcessor](../Processor)
-
----
-
-Frontend for Vidro, a video platform. Built with TanStack Start (SSR) + React.
+Frontend for Vidro, a video platform.
+Consumes [VidroApi](https://github.com/icarosuper/VidroApi); videos processed by [VidroProcessor](https://github.com/icarosuper/video-processor-go).
+Built with TanStack Start (SSR) + React.
 
 ## Stack
 
