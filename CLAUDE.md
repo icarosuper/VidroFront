@@ -4,13 +4,13 @@ Guia nav Claude Code repo. Regras críticas aqui; resto em `docs/claude/`.
 
 ## Projeto
 
-Reescrita frontend Vidro (plataforma vídeo). Backend .NET `../Api/` completo. Frontend construído incremental, fase a fase.
+Reescrita frontend Vidro (plataforma vídeo). Backend .NET `../VidroApi/` completo. Frontend construído incremental, fase a fase.
 
 ## Regras sempre ativas
 
 - **Idioma:** todo código inglês (vars, funções, tipos, comentários, testes). **Commits português.**
-- **Escopo:** nunca edite arquivos fora dir. Pode **ler** `../Api/` p/ entender contratos, não modificar. Endpoint faltando algo → informe usuário.
-- **Endpoints da API:** antes implementar endpoint frontend, **leia `../Api/docs/claude/features-index.md`** p/ confirmar path exato, arquivo fonte backend (`src/VidroApi.Api/Features/...`) e shape request/response. Não adivinhe paths.
+- **Escopo:** nunca edite arquivos fora dir. Pode **ler** `../VidroApi/` p/ entender contratos, não modificar. Endpoint faltando algo → informe usuário.
+- **Endpoints da API:** antes implementar endpoint frontend, **leia `../VidroApi/docs/claude/features-index.md`** p/ confirmar path exato, arquivo fonte backend (`src/VidroApi.Api/Features/...`) e shape request/response. Não adivinhe paths.
 - **Commits:** **nunca commite sem pedido explícito.** Implementar → rodar testes → sugerir mensagem português → esperar aprovação.
 - **Sem `fetch` direto:** todo HTTP via `apiClient` (`src/shared/lib/api-client.ts`). Exceções: uploads presigned e `features/*/server.ts`.
 
@@ -69,4 +69,4 @@ Título de PR (squash merge): `Feature/nome-da-branch (#N)`.
 
 - **Padrão: direto na `master`.** Coisa pequena e bugfix não abre branch.
 - **Exceção: feature grande** (vários commits). Aí **pergunte ao usuário** se é para criar `feature/<topic>` ou mandar direto para `master` — nunca decida sozinho.
-- `master` sempre deployável; produção sai de tags `vX.Y.Z`.
+- `master` sempre deployável; produção sai de tags `vX.Y.Z` (estratégia pretendida — ainda não há tag nenhuma no repo).

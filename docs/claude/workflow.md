@@ -4,7 +4,7 @@ Leia doc: entender projeto fase por fase, estratégia branches, ciclo pós-imple
 
 ## Escopo de edição
 
-Pode **ler** outros projetos (ex: `../Api/`) p/ entender contratos, tipos, endpoints. **Nunca edite** fora de `/home/icaro/Projetos/Vidro/FrontNovo/`. API faltar dados → **informe usuário**, não altere backend.
+Pode **ler** outros projetos (ex: `../VidroApi/`, `../VidroProcessor/`) p/ entender contratos, tipos, endpoints. **Nunca edite** fora deste repo (`VidroFront/`). API faltar dados → **informe usuário**, não altere backend.
 
 ## Fases de implementação
 
@@ -15,10 +15,10 @@ Planos detalhados em `docs/plans/`:
 3. ✅ **Settings** — perfil do usuário, avatar
 4. ✅ **Channel** — create/edit/delete
 5. ✅ **Home + Watch** — trending, feed, HLS player, reações
-6. ✅ **Public channel/user pages** — SSR + SEO
+6. ✅ **Public channel/user pages** — SSR (SEO ainda não existe: só `__root.tsx` define `head`)
 7. ✅ **Upload** — presigned URL, progresso, polling de status
 8. ✅ **Comments** — list, add, reply, edit, delete, reactions
-9. **Playlists**
+9. ✅ **Playlists** — CRUD, itens, página pública
 
 **Cada fase: entrega funcional.** Nada meio feito entre fases.
 
