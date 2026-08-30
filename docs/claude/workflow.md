@@ -24,7 +24,8 @@ Planos detalhados em `docs/plans/`:
 
 ## Branching
 
-- **Feature branches** — 1 branch por fase/grupo (ex: `feature/auth`, `feature/channels`), sai de `master`, volta via PR.
+- **Padrão: commit direto na `master`** — coisa pequena e bugfix não abre branch.
+- **Feature grande** (vários commits) — **pergunte ao usuário** antes: branch `feature/<topic>` ou direto na `master`.
 - **`master`** — sempre deployável.
 
 ## Working style — após cada passo

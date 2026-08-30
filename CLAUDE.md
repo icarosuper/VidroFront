@@ -46,3 +46,27 @@ Leia doc **antes** tarefa descrita. Pular → infringir padrões que existem por
 - **[docs/claude/workflow.md](docs/claude/workflow.md)** — Antes nova fase, criar branches, ou fim de cada passo implementação. Cobre fases projeto, branching, ciclo pós-implementação (testes → docs → commit sugerido → próximos passos).
 
 - **[docs/plans/](docs/plans/)** — Planos detalhados por fase. Ver plano fase ativa antes implementar; marcar tarefas ✅ conforme concluídas.
+
+## Padrão de mensagem de commit
+
+Conventional Commits, **em português**, só o assunto — sem corpo, sem escopo, sem rodapé (nada de `Co-authored-by`).
+
+Formato: `<tipo>: <verbo no infinitivo> <complemento>` — minúsculo depois do tipo, sem ponto final, até ~72 chars.
+
+Tipos usados no repo (frequência real): `feat` > `chore` > `fix` > `refactor` > `docs` / `test`.
+
+- `feat` — funcionalidade nova ou ampliada
+- `fix` — correção de bug/comportamento
+- `chore` — docs, README, migrations, scaffold, reorganização sem lógica
+- `refactor` — renomear/reestruturar sem mudar comportamento
+- `docs` / `test` — quando a mudança é só documentação ou só teste
+
+Exemplos do histórico: `feat: adicionar upload de avatar do canal`, `fix: corrigir botão de reações`, `chore: atualizar README`, `refactor: renomear projeto`.
+
+Título de PR (squash merge): `Feature/nome-da-branch (#N)`.
+
+### Onde commitar
+
+- **Padrão: direto na `master`.** Coisa pequena e bugfix não abre branch.
+- **Exceção: feature grande** (vários commits). Aí **pergunte ao usuário** se é para criar `feature/<topic>` ou mandar direto para `master` — nunca decida sozinho.
+- `master` sempre deployável; produção sai de tags `vX.Y.Z`.
